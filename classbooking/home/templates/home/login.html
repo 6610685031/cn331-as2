@@ -1,0 +1,75 @@
+{% extends "master.html" %}
+<!---->
+{% block title %} เข้าสู่ระบบ {% endblock %}
+<!---->
+{% block content %}
+<div class="bg-light d-flex align-items-center justify-content-center vh-100">
+  <div
+    class="card shadow-lg p-4 rounded-4"
+    style="max-width: 400px; width: 100%"
+  >
+    <div class="text-center mb-4">
+      <h3 class="fw-bold">เข้าสู่ระบบ</h3>
+      <p class="text-muted">กรุณาลงชื่อเข้าใช้เพื่อดำเนินการต่อ</p>
+    </div>
+
+    <form action="{% url 'login' %}" method="POST">
+      {% csrf_token %}
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="username" class="form-label">ชื่อผู้เข้าใช้ของคุณ</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="กรอกชื่อผู้เข้าใช้ของคุณ"
+          required
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">รหัสผ่าน</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          placeholder="กรอกรหัสผ่านของคุณ"
+          required
+        />
+      </div>
+
+      <!-- Remember me -->
+      <div class="mb-3 form-check">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="remember"
+          name="remember"
+        />
+        <label class="form-check-label" for="remember"
+          >จดจำ Session นี้ไว้</label
+        >
+      </div>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
+
+      <div class="text-center mt-3">
+        <small
+          >หากไม่มีชื่ออยู่ในระบบกรุณา <a href="/signup">ลงทะเบียน</a></small
+        >
+      </div>
+
+      <div class="text-center mt-3 text-muted">
+        <a href="/" type="button" class="btn btn-outline-dark">
+          กลับไปยังหน้าหลัก
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

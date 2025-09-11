@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css?family=IBM Plex Sans Thai"
+      rel="stylesheet"
+    />
+    {% load static %}
+    <link rel="icon" href="{% static 'home/favicon.ico' %}" />
+    <title>{% block title %}{% endblock %} - ระบบจองห้องเรียนออนไลน์</title>
+    {% load django_bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: sans-serif;
+        color: white;
+        font-family: "IBM Plex Sans Thai";
+      }
+
+      /* make video cover screen */
+      .bg-video {
+        transform: translate(-50%, -50%);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: cover;
+      }
+
+      /* overlay for readability */
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* darken video */
+        z-index: 0;
+      }
+
+      /* main content */
+      .content {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- background video -->
+    <video autoplay muted loop playsinline class="bg-video">
+      {% load static %}
+      <source src="{% static 'home/home.mp4' %}" type="video/mp4" />
+    </video>
+
+    <!-- overlay -->
+    <div class="overlay"></div>
+    {% block content %} {% endblock %}
+  </body>
+</html>

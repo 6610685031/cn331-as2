@@ -1,0 +1,37 @@
+{% extends "master.html" %}
+<!---->
+{% block title %} ลงทะเบียน {% endblock %}
+<!---->
+{% block content %}
+<div class="bg-light d-flex align-items-center justify-content-center vh-100">
+  <div
+    class="card shadow-lg p-4 rounded-4"
+    style="max-width: 450px; width: 100%"
+  >
+    <div class="text-center mb-4">
+      <h3 class="fw-bold">สร้างบัญชีผู้เข้าใช้</h3>
+      <p class="text-muted">กรอกรายละเอียดของคุณเพื่อลงทะเบียน</p>
+    </div>
+    {% load crispy_forms_tags %}
+    <form action="{% url 'signup' %}" method="POST">
+      {% csrf_token %} {{ form | crispy }}
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-success w-100">ลงทะเบียน</button>
+
+      <div class="text-center mt-3">
+        <small
+          >หากมีชื่ออยู่ในระบบแล้วกรุณา <a href="/login">เข้าสู่ระบบ</a></small
+        >
+      </div>
+
+      <div class="text-center mt-3 text-muted">
+        <a href="/" type="button" class="btn btn-outline-dark">
+          กลับไปยังหน้าหลัก
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
