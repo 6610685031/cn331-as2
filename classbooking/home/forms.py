@@ -1,8 +1,29 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+
+
+class SignInForm(AuthenticationForm):
+    username = forms.CharField(max_length=150, required=True, label="ชื่อผู้เข้าใช้ของคุณ")
+    password = forms.CharField(
+        required=True, label="รหัสผ่าน", widget=forms.PasswordInput
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "email"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.fields["username"].widget.attrs.update(
+            {"placeholder": "กรอกชื่อผู้เข้าใช้ของคุณ"}
+        )
+        self.fields["password"].widget.attrs.update({"placeholder": "กรอกรหัสผ่านของคุณ"})
 
 
 class SignUpForm(UserCreationForm):
@@ -24,11 +45,8 @@ class SignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Add Crispy Form Helper
         self.helper = FormHelper()
         self.helper.form_method = "post"
-
-        # Add placeholders
         self.fields["username"].widget.attrs.update(
             {"placeholder": "กรอกชื่อผู้เข้าใช้ของคุณ"}
         )

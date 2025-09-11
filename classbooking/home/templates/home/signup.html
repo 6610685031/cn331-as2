@@ -13,7 +13,7 @@
       <p class="text-muted">กรอกรายละเอียดของคุณเพื่อลงทะเบียน</p>
     </div>
     {% load crispy_forms_tags %}
-    <form action="{% url 'signup' %}" method="POST">
+    <form action="{% url 'auth_signup' %}" method="POST">
       {% csrf_token %} {{ form | crispy }}
 
       <!-- Submit -->
