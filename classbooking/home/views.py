@@ -5,9 +5,11 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import render
-from django.template import loader
 from django.shortcuts import redirect
+from django.template import loader
+
 from django.http import HttpResponse
+from django.urls import reverse
 
 
 def home(request):
@@ -16,6 +18,10 @@ def home(request):
 
 
 def auth_login(request):
+    if request.user.is_authenticated:
+        messages.success(request, "You're already logged in!.")
+        return render(request, "home/home.html")
+
     if request.method == "POST":
 
         # data argument must be used in order for the form to be valid.
@@ -31,7 +37,7 @@ def auth_login(request):
             messages.success(
                 request, f"Login successful!. You are now logged in as {username}"
             )
-            return redirect("auth_login")
+            return render(request, "home/home.html")
     else:
         form = SignInForm()
 
@@ -44,6 +50,10 @@ def auth_login(request):
 
 
 def auth_signup(request):
+    if request.user.is_authenticated:
+        messages.success(request, "You're already logged in!.")
+        return render(request, "home/home.html")
+
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -63,7 +73,7 @@ def auth_logout(request):
         messages.success(request, "Logout successful!.")
         return redirect("auth_logout")
     else:
-        return redirect("home")
+        return render(request, "home/home.html")
 
 
 # Create your views here.
