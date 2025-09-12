@@ -36,9 +36,12 @@ def auth_login(request):
 
             # if user doesn't check remember_me button -> make the session expires when the browser is closed
             # normally django will save session token for 14 days (2 weeks)
-            if not request.POST.get("remember_me"):
-                request.session.set_expiry(0)
-
+            if request.POST.get("remember_me"):
+                request.session.set_expiry(
+                    60 * 60 * 24 * 30
+                )  # set session to expires in 30 days
+            else:
+                request.session.set_expiry(0)  # set to expires after the browser closes
             login(request, authenticate(username=username, password=password))
             messages.success(
                 request, f"Login successful!. You are now logged in as {username}"
