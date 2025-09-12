@@ -19,7 +19,7 @@ def home(request):
 
 def auth_login(request):
     if request.user.is_authenticated:
-        messages.success(request, "You're already logged in!.")
+        messages.info(request, "You're already logged in!")
         return render(request, "home/home.html")
 
     if request.method == "POST":
@@ -43,9 +43,7 @@ def auth_login(request):
             else:
                 request.session.set_expiry(0)  # set to expires after the browser closes
             login(request, authenticate(username=username, password=password))
-            messages.success(
-                request, f"Login successful!. You are now logged in as {username}"
-            )
+            messages.success(request, f"Welcome, You are now logged in as {username}")
             return render(request, "home/home.html")
     else:
         form = SignInForm()
@@ -58,9 +56,9 @@ def auth_login(request):
     return render(request, "home/login.html", {"form": form})
 
 
-def auth_signup(request):
+def auth_register(request):
     if request.user.is_authenticated:
-        messages.success(request, "You're already logged in!.")
+        messages.info(request, "You're already logged in!.")
         return render(request, "home/home.html")
 
     if request.method == "POST":
@@ -68,18 +66,18 @@ def auth_signup(request):
         if form.is_valid():
             form.save()
             messages.success(
-                request, "Account created successfully! You can now login."
+                request, "Account created successfully! Please proceed to login."
             )
-            return redirect("auth_signup")
+            return redirect("auth_login")
     else:
         form = SignUpForm()
-    return render(request, "home/signup.html", {"form": form})
+    return render(request, "home/register.html", {"form": form})
 
 
 def auth_logout(request):
     if request.user.is_authenticated:
         logout(request)
-        messages.success(request, "Logout successful!.")
+        messages.success(request, "Logout successful!")
         return redirect("auth_logout")
     else:
         return render(request, "home/home.html")
