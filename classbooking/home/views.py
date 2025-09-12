@@ -19,7 +19,8 @@ def home(request):
 
 def auth_login(request):
     if request.user.is_authenticated:
-        messages.info(request, "You're already logged in!")
+        # already logged in
+        messages.info(request, "คุณได้เข้าสู่ระบบเรียบร้อยแล้ว")
         return render(request, "home/home.html")
 
     if request.method == "POST":
@@ -43,7 +44,9 @@ def auth_login(request):
             else:
                 request.session.set_expiry(0)  # set to expires after the browser closes
             login(request, authenticate(username=username, password=password))
-            messages.success(request, f"Welcome, You are now logged in as {username}")
+
+            # login success
+            messages.success(request, f"เข้าสู่ระบบสำเร็จ ยินดีต้อนรับครับ คุณ {username}")
             return render(request, "home/home.html")
     else:
         form = SignInForm()
@@ -58,16 +61,16 @@ def auth_login(request):
 
 def auth_register(request):
     if request.user.is_authenticated:
-        messages.info(request, "You're already logged in!.")
+        # already logged in
+        messages.info(request, "คุณได้เข้าสู่ระบบเรียบร้อยแล้ว")
         return render(request, "home/home.html")
 
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(
-                request, "Account created successfully! Please proceed to login."
-            )
+            # account created success
+            messages.success(request, "สร้างบัญชีสำเร็จแล้ว กรุณาดำเนินการเข้าสู่ระบบ")
             return redirect("auth_login")
     else:
         form = SignUpForm()
@@ -77,7 +80,8 @@ def auth_register(request):
 def auth_logout(request):
     if request.user.is_authenticated:
         logout(request)
-        messages.success(request, "Logout successful!")
+        # logout success
+        messages.success(request, "ลงชื่อออกสำเร็จ")
         return redirect("auth_logout")
     else:
         return render(request, "home/home.html")
