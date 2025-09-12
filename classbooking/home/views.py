@@ -1,10 +1,12 @@
 from .forms import SignUpForm
 from .forms import SignInForm
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import render
 from django.template import loader
+from django.shortcuts import redirect
 from django.http import HttpResponse
 
 
@@ -26,15 +28,18 @@ def auth_login(request):
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
             login(request, authenticate(username=username, password=password))
-            return HttpResponse(
-                f"Login successful!. You are now logged in as {username}"
+            messages.success(
+                request, f"Login successful!. You are now logged in as {username}"
             )
-        else:
-            return HttpResponse(
-                "Please enter a correct username and password. Note that both fields may be case-sensitive."
-            )
+            return redirect("auth_login")
+    else:
+        form = SignInForm()
 
-    form = SignInForm()
+        # change error messages to thai
+        form.error_messages["invalid_login"] = (
+            "กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ถูกต้อง โปรดทราบว่าทั้งสองช่องอาจมีการคำนึงถึงตัวพิมพ์เล็กและใหญ่"
+        )
+        form.error_messages["inactive"] = "บัญชีนี้ไม่ได้ถูกเปิดใช้งานอยู่ กรุณาติดต่อเจ้าหน้าที่"
     return render(request, "home/login.html", {"form": form})
 
 
@@ -43,15 +48,22 @@ def auth_signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("Account created successfully! You can now login.")
+            messages.success(
+                request, "Account created successfully! You can now login."
+            )
+            return redirect("auth_signup")
     else:
         form = SignUpForm()
-        return render(request, "home/signup.html", {"form": form})
+    return render(request, "home/signup.html", {"form": form})
 
 
 def auth_logout(request):
-    logout(request)
-    return HttpResponse("Logout successful!.")
+    if request.user.is_authenticated:
+        logout(request)
+        messages.success(request, "Logout successful!.")
+        return redirect("auth_logout")
+    else:
+        return redirect("home")
 
 
 # Create your views here.

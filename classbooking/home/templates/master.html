@@ -72,6 +72,19 @@
 
     <!-- overlay -->
     <div class="overlay"></div>
+
+    <!-- display messages-->
+    {% if messages %}
+    <div class="content messages">
+      {% for message in messages %}
+      <ul {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+        {{ message }}
+      </ul>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- block content-->
     {% block content %} {% endblock %}
   </body>
 </html>
