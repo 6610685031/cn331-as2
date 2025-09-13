@@ -15,3 +15,22 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = ("classroom", "user")
     search_fields = ("classroom__name", "user__username")
     date_hierarchy = "start_time"
+
+    def save_model(self, request, obj, form, change):
+        # Save the booking
+        super().save_model(request, obj, form, change)
+
+        # Update classroom availability
+        obj.classroom.is_available = False
+        obj.classroom.booked_by = obj.user
+        obj.classroom.save()
+
+    def delete_model(self, request, obj):
+        # Reset classroom availability before deleting booking
+        classroom = obj.classroom
+        super().delete_model(request, obj)
+
+        # Update classroom availability
+        classroom.is_available = True
+        classroom.booked_by = None
+        classroom.save()

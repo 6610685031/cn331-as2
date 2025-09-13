@@ -1,7 +1,9 @@
 import datetime
 
 from django import forms
-from .models import Booking
+from django.core.exceptions import ValidationError
+
+from .models import Booking, Classroom
 
 
 # DateTime workaround for Django
@@ -31,4 +33,28 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ["classroom", "start_time", "end_time"]
+        fields = ["classroom", "start_time", "end_time"]  # user assigned in view
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only show classrooms that are currently available
+        self.fields["classroom"].queryset = Classroom.objects.filter(is_available=True)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        classroom = cleaned_data.get("classroom")
+        start = cleaned_data.get("start_time")
+        end = cleaned_data.get("end_time")
+
+        if start and end and classroom:
+            # Check for overlapping bookings
+            overlapping = Booking.objects.filter(
+                classroom=classroom, start_time__lt=end, end_time__gt=start
+            )
+            if self.instance.pk:
+                overlapping = overlapping.exclude(pk=self.instance.pk)
+
+            if overlapping.exists():
+                raise ValidationError(
+                    "This classroom is already booked for the selected time."
+                )
