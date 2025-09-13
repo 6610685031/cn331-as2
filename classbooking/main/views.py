@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import localtime
+
 
 from .models import Classroom, Booking
 from .forms import BookingForm
@@ -26,7 +28,7 @@ def overview(request):
     return render(
         request,
         "main/overview.html",
-        {"events": events, "bookings": bookings},
+        {"events": events, "bookings": bookings, "server_timezone": settings.TIME_ZONE},
     )
 
 
