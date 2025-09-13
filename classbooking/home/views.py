@@ -19,12 +19,12 @@ def home(request):
 
 def auth_login(request):
 
-    next_url = request.GET.get("next", settings.LOGIN_REDIRECT_URL)
-    messages.info(request, next_url)
-
     if request.user.is_authenticated:
         # already logged in
         messages.info(request, "คุณได้เข้าสู่ระบบเรียบร้อยแล้ว")
+
+        # fetch next parameter from previous page
+        next_url = request.GET.get("next", settings.LOGIN_REDIRECT_URL)
         return redirect(next_url)
 
     if request.method == "POST":
@@ -51,6 +51,9 @@ def auth_login(request):
 
             # login success
             messages.success(request, f"เข้าสู่ระบบสำเร็จ ยินดีต้อนรับครับ คุณ {username}")
+
+            # fetch next parameter from POST request
+            next_url = request.POST.get("next", settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
     else:
         form = SignInForm()
@@ -60,6 +63,7 @@ def auth_login(request):
             "กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ถูกต้อง โปรดทราบว่าทั้งสองช่องอาจมีการคำนึงถึงตัวพิมพ์เล็กและใหญ่"
         )
         form.error_messages["inactive"] = "บัญชีนี้ไม่ได้ถูกเปิดใช้งานอยู่ กรุณาติดต่อเจ้าหน้าที่"
+
     return render(request, "home/login.html", {"form": form})
 
 

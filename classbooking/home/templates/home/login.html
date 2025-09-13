@@ -45,6 +45,11 @@
           กลับไปยังหน้าหลัก
         </a>
       </div>
+
+      <!-- workaround for 'next' parameter-->
+      {% if request.GET.next %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+      {% endif %}
     </form>
   </div>
 </div>
