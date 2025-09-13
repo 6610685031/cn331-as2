@@ -20,8 +20,8 @@ class BookingForm(forms.ModelForm):
         # Only show classrooms that are currently available
         self.fields["classroom"].queryset = Classroom.objects.filter(is_available=True)
 
-        # Current time
-        now = timezone.now()
+        # Current time localized
+        now = timezone.localtime()
         now_str = now.strftime("%Y-%m-%dT%H:%M")
         one_hour_later_str = (now + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M")
 
@@ -29,7 +29,7 @@ class BookingForm(forms.ModelForm):
         self.fields["start_time"].widget.attrs["min"] = now_str
         self.fields["end_time"].widget.attrs["min"] = now_str
 
-        # Set default values (only if the form is not bound with POST data)
+        # Set default values if new form
         if not self.is_bound:
             self.initial["start_time"] = now_str
             self.initial["end_time"] = one_hour_later_str
@@ -40,15 +40,24 @@ class BookingForm(forms.ModelForm):
         start = cleaned_data.get("start_time")
         end = cleaned_data.get("end_time")
 
-        # Prevent booking in the past
+        # Convert naive datetimes (from datetime-local) to aware, in current timezone
+        if start and timezone.is_naive(start):
+            start = timezone.make_aware(start, timezone.get_current_timezone())
+            cleaned_data["start_time"] = start
+
+        if end and timezone.is_naive(end):
+            end = timezone.make_aware(end, timezone.get_current_timezone())
+            cleaned_data["end_time"] = end
+
+        # ✅ Prevent booking in the past
         if start and start < timezone.now():
             raise ValidationError("You cannot book a classroom in the past.")
 
-        # End time must be after start time
+        # ✅ End must be after start
         if start and end and end <= start:
             raise ValidationError("End time must be after start time.")
 
-        # Prevent overlapping bookings
+        # ✅ Prevent overlapping bookings
         if start and end and classroom:
             overlapping = Booking.objects.filter(
                 classroom=classroom, start_time__lt=end, end_time__gt=start
