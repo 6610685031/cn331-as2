@@ -22,6 +22,7 @@
                 <thead>
                     <tr>
                         <th>Classroom</th>
+                        <th>ID</th>
                         <th>Booked By</th>
                         <th>Start</th>
                         <th>End</th>
@@ -31,6 +32,8 @@
                     {% for b in bookings %}
                     <tr>
                         <td>{{ b.classroom.name }}</td>
+                        <!-- added id for testing, will be removed later -->
+                        <td>{{ b.id }}</td>
                         <td>{{ b.user.username }}</td>
                         <td>{{ b.start_time }}</td>
                         <td>{{ b.end_time }}</td>
