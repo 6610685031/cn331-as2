@@ -33,13 +33,15 @@ def overview(request):
 
 
 @login_required
-def classroom_list(request):
+def classroom(request):
     classrooms = Classroom.objects.all()
     return render(request, "main/classroom.html", {"classrooms": classrooms})
 
 
 @login_required
 def booking(request):
+    user_bookings = Booking.objects.filter(user=request.user).order_by("start_time")
+
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
@@ -51,7 +53,9 @@ def booking(request):
     else:
         form = BookingForm()
 
-    return render(request, "main/booking.html", {"form": form})
+    return render(
+        request, "main/booking.html", {"form": form, "bookings": user_bookings}
+    )
 
 
 @login_required
