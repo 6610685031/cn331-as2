@@ -1,19 +1,23 @@
 {% extends "home/master/index.html" %}
 <!---->
-{% block title %} ลงทะเบียน {% endblock %}
+{% block title %} ลงทะเบียน {% endblock title %}
 <!---->
 {% block content %}
+<style>
+  .register-width {
+    max-width: 450px; width: 100%;
+  }
+</style>
 <div class="bg-light d-flex align-items-center justify-content-center vh-100">
   <div
-    class="card shadow-lg p-4 rounded-4"
-    style="max-width: 450px; width: 100%"
+    class="card shadow-lg p-4 rounded-4 register-width"
   >
     <div class="text-center mb-4">
       <h3 class="fw-bold">สร้างบัญชีผู้เข้าใช้</h3>
       <p class="text-muted">กรอกรายละเอียดของคุณเพื่อลงทะเบียน</p>
     </div>
     {% load crispy_forms_tags %}
-    <form action="{% url 'auth_register' %}" method="POST">
+    <form action="{% url 'auth_register' %}" method="post">
       {% csrf_token %} {{ form | crispy }}
 
       <!-- Submit -->
@@ -27,7 +31,7 @@
       </div>
 
       <div class="text-center mt-3 text-muted">
-        <a href="/" type="button" class="btn btn-outline-dark">
+        <a href="{% url 'home' %}" type="button" class="btn btn-outline-dark">
           กลับไปยังหน้าหลัก
         </a>
       </div>
@@ -35,4 +39,4 @@
   </div>
 </div>
 
-{% endblock %}
+{% endblock content %}

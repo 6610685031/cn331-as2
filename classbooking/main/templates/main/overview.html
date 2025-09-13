@@ -1,8 +1,7 @@
 {% extends "main/master/index.html" %}
-{% load static %}
-
-{% block title %}Overview{% endblock %}
-
+<!---->
+{% block title %} Overview {% endblock title %}
+<!---->
 {% block content %}
 <h2 class="text-white">Classroom Timetable Overview</h2>
 
@@ -64,4 +63,4 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 </script>
-{% endblock %}
+{% endblock content %}

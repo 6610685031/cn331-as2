@@ -1,12 +1,16 @@
 {% extends "home/master/index.html" %}
 <!---->
-{% block title %} เข้าสู่ระบบ {% endblock %}
+{% block title %} เข้าสู่ระบบ {% endblock title %}
 <!---->
 {% block content %}
+<style>
+  .login-width {
+    max-width: 400px; width: 100%;
+  }
+</style>
 <div class="bg-light d-flex align-items-center justify-content-center vh-100">
   <div
-    class="card shadow-lg p-4 rounded-4"
-    style="max-width: 400px; width: 100%"
+    class="card shadow-lg p-4 rounded-4 login-width"
   >
     <div class="text-center mb-4">
       <h3 class="fw-bold">เข้าสู่ระบบ</h3>
@@ -14,7 +18,7 @@
     </div>
 
     {% load crispy_forms_tags %}
-    <form action="{% url 'auth_login' %}" method="POST">
+    <form action="{% url 'auth_login' %}" method="post">
       {% csrf_token %} {{ form | crispy }}
 
       <!-- Remember me -->
@@ -41,7 +45,7 @@
       </div>
 
       <div class="text-center mt-3 text-muted">
-        <a href="/" type="button" class="btn btn-outline-dark">
+        <a href="{% url 'home' %}" type="button" class="btn btn-outline-dark">
           กลับไปยังหน้าหลัก
         </a>
       </div>
@@ -54,4 +58,4 @@
   </div>
 </div>
 
-{% endblock %}
+{% endblock content %}

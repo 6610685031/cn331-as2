@@ -1,9 +1,10 @@
 {% extends "main/master/index.html" %}
 <!---->
-{% block title %} Classrooms {% endblock %}
+{% block title %} Classrooms {% endblock title %}
 <!---->
 {% block content %}
 <h2 class="text-white">All Classrooms</h2>
+
 <table class="table table-striped bg-light">
   <thead>
     <tr>
@@ -28,4 +29,4 @@
     {% endfor %}
   </tbody>
 </table>
-{% endblock %}
+{% endblock content %}

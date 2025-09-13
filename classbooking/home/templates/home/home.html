@@ -1,6 +1,6 @@
 {% extends "home/master/index.html" %}
 <!---->
-{% block title %} หน้าหลัก {% endblock %}
+{% block title %} หน้าหลัก {% endblock title %}
 <!---->
 {% block content %}
 <div class="content">
@@ -8,6 +8,5 @@
   <a href="{% url 'auth_login' %}" class="btn btn-primary">
       เริ่มการจอง
   </a>
-  </form>
 </div>
-{% endblock %}
+{% endblock content %}
