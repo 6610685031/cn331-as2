@@ -1,0 +1,31 @@
+{% extends "main/master/index.html" %}
+<!---->
+{% block title %} Classrooms {% endblock %}
+<!---->
+{% block content %}
+<h2 class="text-white">All Classrooms</h2>
+<table class="table table-striped bg-light">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Capacity</th>
+      <th>Available</th>
+      <th>Booked By</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for room in classrooms %}
+    <tr>
+      <td>{{ room.name }}</td>
+      <td>{{ room.capacity }}</td>
+      <td>{% if room.is_available %}✅ Yes{% else %}❌ No{% endif %}</td>
+      <td>{{ room.booked_by|default:"-" }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">No classrooms available</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

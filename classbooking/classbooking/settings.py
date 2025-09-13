@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "home",
+    "main",
     "crispy_forms",
     "crispy_bootstrap5",
     "django_bootstrap5",
