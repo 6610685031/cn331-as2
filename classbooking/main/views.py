@@ -4,11 +4,17 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.serializers import serialize
 from django.utils.timezone import localtime
+from django.contrib.auth.decorators import login_required
 
 from .models import Classroom, Booking
 from .forms import BookingForm
 
+import json
+from django.core.serializers import serialize
+from django.utils.timezone import localtime
 
+
+@login_required
 def overview(request):
     bookings = Booking.objects.select_related("classroom", "user")
     events = []
@@ -29,11 +35,13 @@ def overview(request):
     )
 
 
+@login_required
 def classroom_list(request):
     classrooms = Classroom.objects.all()
     return render(request, "main/classroom.html", {"classrooms": classrooms})
 
 
+@login_required
 def booking(request):
     form = BookingForm()
     if request.method == "POST":

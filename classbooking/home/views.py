@@ -1,5 +1,6 @@
 from .forms import SignUpForm
 from .forms import SignInForm
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -9,7 +10,6 @@ from django.shortcuts import redirect
 from django.template import loader
 
 from django.http import HttpResponse
-from django.urls import reverse
 
 
 def home(request):
@@ -18,10 +18,14 @@ def home(request):
 
 
 def auth_login(request):
+
+    next_url = request.GET.get("next", settings.LOGIN_REDIRECT_URL)
+    messages.info(request, next_url)
+
     if request.user.is_authenticated:
         # already logged in
         messages.info(request, "คุณได้เข้าสู่ระบบเรียบร้อยแล้ว")
-        return render(request, "home/home.html")
+        return redirect(next_url)
 
     if request.method == "POST":
 
@@ -47,7 +51,7 @@ def auth_login(request):
 
             # login success
             messages.success(request, f"เข้าสู่ระบบสำเร็จ ยินดีต้อนรับครับ คุณ {username}")
-            return render(request, "home/home.html")
+            return redirect(next_url)
     else:
         form = SignInForm()
 
@@ -60,10 +64,13 @@ def auth_login(request):
 
 
 def auth_register(request):
+
+    next_url = request.GET.get("next", settings.LOGIN_REDIRECT_URL)
+
     if request.user.is_authenticated:
         # already logged in
         messages.info(request, "คุณได้เข้าสู่ระบบเรียบร้อยแล้ว")
-        return render(request, "home/home.html")
+        return redirect(next_url)
 
     if request.method == "POST":
         form = SignUpForm(request.POST)
