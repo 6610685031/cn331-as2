@@ -1,13 +1,33 @@
 {% extends "main/master/index.html" %}
-<!---->
-{% block title %} Booking {% endblock title %}
-<!---->
+
 {% block content %}
-<h2 class="text-white">Reserve a Classroom</h2>
-<div class="card p-4">
-  <form method="post">
-    {% csrf_token %} {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Book</button>
-  </form>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card shadow-lg rounded-3">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">Reserve a Classroom</h4>
+        </div>
+        
+        <div class="card-body">
+
+          <!-- Django form -->
+          {% load crispy_forms_tags %}
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form | crispy }}
+            
+            <!-- Submit -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success btn-lg">Book Classroom</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 {% endblock content %}

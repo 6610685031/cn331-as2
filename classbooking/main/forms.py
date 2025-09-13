@@ -1,44 +1,38 @@
-import datetime
-
 from django import forms
 from django.core.exceptions import ValidationError
-
+from django.utils import timezone
+from datetime import timedelta
 from .models import Booking, Classroom
 
 
-# DateTime workaround for Django
-# https://stackoverflow.com/questions/50214773/type-datetime-local-in-django-form
-class DateTimeLocalInput(forms.DateTimeInput):
-    input_type = "datetime-local"
-
-
-class DateTimeLocalField(forms.DateTimeField):
-    # Set DATETIME_INPUT_FORMATS here because, if USE_L10N
-    # is True, the locale-dictated format will be applied
-    # instead of settings.DATETIME_INPUT_FORMATS.
-    # See also:
-    # https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats
-
-    input_formats = [
-        "%Y-%m-%dT%H:%M:%S",
-        "%Y-%m-%dT%H:%M:%S.%f",
-        "%Y-%m-%dT%H:%M",
-    ]
-    widget = DateTimeLocalInput(format="%Y-%m-%dT%H:%M")
-
-
 class BookingForm(forms.ModelForm):
-    start_time = DateTimeLocalField()
-    end_time = DateTimeLocalField()
-
     class Meta:
         model = Booking
-        fields = ["classroom", "start_time", "end_time"]  # user assigned in view
+        fields = ["classroom", "start_time", "end_time"]
+        widgets = {
+            "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         # Only show classrooms that are currently available
         self.fields["classroom"].queryset = Classroom.objects.filter(is_available=True)
+
+        # Current time
+        now = timezone.now()
+        now_str = now.strftime("%Y-%m-%dT%H:%M")
+        one_hour_later_str = (now + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M")
+
+        # Set frontend restrictions
+        self.fields["start_time"].widget.attrs["min"] = now_str
+        self.fields["end_time"].widget.attrs["min"] = now_str
+
+        # Set default values (only if the form is not bound with POST data)
+        if not self.is_bound:
+            self.initial["start_time"] = now_str
+            self.initial["end_time"] = one_hour_later_str
 
     def clean(self):
         cleaned_data = super().clean()
@@ -46,8 +40,16 @@ class BookingForm(forms.ModelForm):
         start = cleaned_data.get("start_time")
         end = cleaned_data.get("end_time")
 
+        # Prevent booking in the past
+        if start and start < timezone.now():
+            raise ValidationError("You cannot book a classroom in the past.")
+
+        # End time must be after start time
+        if start and end and end <= start:
+            raise ValidationError("End time must be after start time.")
+
+        # Prevent overlapping bookings
         if start and end and classroom:
-            # Check for overlapping bookings
             overlapping = Booking.objects.filter(
                 classroom=classroom, start_time__lt=end, end_time__gt=start
             )
@@ -58,3 +60,5 @@ class BookingForm(forms.ModelForm):
                 raise ValidationError(
                     "This classroom is already booked for the selected time."
                 )
+
+        return cleaned_data

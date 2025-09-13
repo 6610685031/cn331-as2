@@ -6,4 +6,5 @@ class MainConfig(AppConfig):
     name = "main"
 
     def ready(self):
+        # linter is an idiot actually main.signals is imported and working properly
         import main.signals
