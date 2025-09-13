@@ -47,5 +47,6 @@ def booking(request):
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
+            form.instance.user = request.user
             form.save()
     return render(request, "main/booking.html", {"form": form})
