@@ -1,17 +1,11 @@
-import json
-
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.core.serializers import serialize
-from django.utils.timezone import localtime
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.timezone import localtime
 
 from .models import Classroom, Booking
 from .forms import BookingForm
-
-import json
-from django.core.serializers import serialize
-from django.utils.timezone import localtime
 
 
 @login_required
@@ -25,13 +19,14 @@ def overview(request):
                 "title": f"{b.classroom.name} - {b.user.username}",
                 "start": localtime(b.start_time).isoformat(),
                 "end": localtime(b.end_time).isoformat(),
+                "color": "#f56954",  # red for booked
             }
         )
 
     return render(
         request,
         "main/overview.html",
-        {"events": json.dumps(events), "bookings": bookings},
+        {"events": events, "bookings": bookings},
     )
 
 
@@ -43,10 +38,47 @@ def classroom_list(request):
 
 @login_required
 def booking(request):
-    form = BookingForm()
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
-            form.instance.user = request.user
-            form.save()
+            booking = form.save(commit=False)
+            booking.user = request.user  # assign logged-in user
+            booking.save()  # signals update classroom availability automatically
+            messages.success(request, "Classroom booked successfully!")
+            return redirect("overview")
+    else:
+        form = BookingForm()
+
     return render(request, "main/booking.html", {"form": form})
+
+
+@login_required
+def booking_edit(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+
+    # Only allow owner or staff
+    if booking.user != request.user and not request.user.is_staff:
+        raise PermissionDenied("You cannot edit this booking.")
+
+    if request.method == "POST":
+        form = BookingForm(request.POST, instance=booking)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Booking updated successfully.")
+            return redirect("overview")
+    else:
+        form = BookingForm(instance=booking)
+    return render(request, "main/booking.html", {"form": form})
+
+
+@login_required
+def booking_cancel(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+
+    # Only allow owner or staff
+    if booking.user != request.user and not request.user.is_staff:
+        raise PermissionDenied("You cannot cancel this booking.")
+
+    booking.delete()
+    messages.success(request, "Booking cancelled successfully.")
+    return redirect("overview")
