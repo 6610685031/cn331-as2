@@ -14,11 +14,23 @@ class BookingForm(forms.ModelForm):
             "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    # Add showAll to get whether if we want to make all classroom fields visible or not
+    # Defaults at False
+    def __init__(
+        self,
+        *args,
+        showAll=False,
+        **kwargs,
+    ):
+
+        self.showAll = showAll
         super().__init__(*args, **kwargs)
 
         # Only show classrooms that are currently available
-        self.fields["classroom"].queryset = Classroom.objects.filter(is_available=True)
+        if not showAll:
+            self.fields["classroom"].queryset = Classroom.objects.filter(
+                is_available=True
+            )
 
         # Current time localized
         now = timezone.localtime()
@@ -49,15 +61,15 @@ class BookingForm(forms.ModelForm):
             end = timezone.make_aware(end, timezone.get_current_timezone())
             cleaned_data["end_time"] = end
 
-        # ✅ Prevent booking in the past
+        # Prevent booking in the past
         if start and start < timezone.now():
             raise ValidationError("You cannot book a classroom in the past.")
 
-        # ✅ End must be after start
+        # End must be after start
         if start and end and end <= start:
             raise ValidationError("End time must be after start time.")
 
-        # ✅ Prevent overlapping bookings
+        # Prevent overlapping bookings
         if start and end and classroom:
             overlapping = Booking.objects.filter(
                 classroom=classroom, start_time__lt=end, end_time__gt=start

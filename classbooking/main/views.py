@@ -21,7 +21,7 @@ def overview(request):
                 "title": f"{b.classroom.name} - {b.user.username}",
                 "start": localtime(b.start_time).isoformat(),
                 "end": localtime(b.end_time).isoformat(),
-                "color": "#f56954",  # red for booked
+                "color": "#f56954",  # Red for booked
             }
         )
 
@@ -44,10 +44,13 @@ def booking(request):
 
     if request.method == "POST":
         form = BookingForm(request.POST)
+
+        # Debug messages for testing
+        # messages.info(request, list(list(request.POST.items())))
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.user = request.user  # assign logged-in user
-            booking.save()  # signals update classroom availability automatically
+            booking.user = request.user  # Assign logged-in user
+            booking.save()  # Signals update classroom availability automatically
             messages.success(request, "Classroom booked successfully!")
             return redirect("overview")
     else:
@@ -67,21 +70,33 @@ def booking_edit(request, pk):
         raise PermissionDenied("You cannot edit this booking.")
 
     if request.method == "POST":
-        form = BookingForm(request.POST, instance=booking)
+
+        # Workaround form limitation by manually getting id, classroom_id
+        appended_post = request.POST.copy()
+        appended_post["id"] = pk
+        appended_post["classroom"] = Booking.objects.get(pk=pk).classroom_id
+
+        # Then set the request to BookingForm that has showAll=true
+        form = BookingForm(appended_post, instance=booking, showAll=True)
+
         if form.is_valid():
             form.save()
             messages.success(request, "Booking updated successfully.")
             return redirect("overview")
     else:
         form = BookingForm(instance=booking)
-    return render(request, "main/booking.html", {"form": form})
+    return render(
+        request,
+        "main/booking.html",
+        {"form": form, "bookings": booking, "edit_mode": "on"},
+    )
 
 
 @login_required
 def booking_cancel(request, pk):
     booking = get_object_or_404(Booking, pk=pk)
 
-    # Only allow owner or staff
+    # Permission checker
     if booking.user != request.user and not request.user.is_staff:
         raise PermissionDenied("You cannot cancel this booking.")
 
