@@ -12,7 +12,6 @@
       <th>Room number</th>
       <th>Capacity</th>
       <th>Available</th>
-      <th>Booked By</th>
     </tr>
   </thead>
   <tbody>
@@ -22,7 +21,6 @@
       <td>{{ room.room_number }}</td>
       <td>{{ room.capacity }}</td>
       <td>{% if room.is_available %}✅ Yes{% else %}❌ No{% endif %}</td>
-      <td>{{ room.booked_by|default:"-" }}</td>
     </tr>
     {% empty %}
     <tr>
