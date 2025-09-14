@@ -44,6 +44,7 @@ def booking(request):
 
     if request.method == "POST":
         form = BookingForm(request.POST)
+        form.instance.user = request.user
 
         # Debug messages for testing
         # messages.info(request, list(list(request.POST.items())))

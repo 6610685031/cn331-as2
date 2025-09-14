@@ -26,6 +26,9 @@ class BookingForm(forms.ModelForm):
         self.showAll = showAll
         super().__init__(*args, **kwargs)
 
+        # Change the placeholder for the classroom dropdown
+        self.fields["classroom"].empty_label = "Select a classroom"
+
         # Only show classrooms that are currently available
         if not showAll:
             self.fields["classroom"].queryset = Classroom.objects.filter(
@@ -51,6 +54,7 @@ class BookingForm(forms.ModelForm):
         classroom = cleaned_data.get("classroom")
         start = cleaned_data.get("start_time")
         end = cleaned_data.get("end_time")
+        user = self.instance.user
 
         # Convert naive datetimes (from datetime-local) to aware, in current timezone
         if start and timezone.is_naive(start):
@@ -66,8 +70,16 @@ class BookingForm(forms.ModelForm):
             raise ValidationError("You cannot book a classroom in the past.")
 
         # End must be after start
-        if start and end and end <= start:
-            raise ValidationError("End time must be after start time.")
+        if start and end:
+            if end <= start:
+                raise ValidationError("End time must be after start time.")
+
+            # Enforce maximum 1 hour booking for normal users
+            # Assuming superusers/staff are allowed longer bookings
+            if user and not user.is_staff and (end - start) > timedelta(hours=1):
+                raise ValidationError(
+                    "You cannot book a classroom for more than 1 hour."
+                )
 
         # Prevent overlapping bookings
         if start and end and classroom:

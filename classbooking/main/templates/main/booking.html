@@ -62,6 +62,17 @@
           {% load form_tags %}
           <form method="post" novalidate>
             {% csrf_token %}
+            
+            <!-- Error -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-block alert-danger">
+              <ul class="m-0">  
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
 
             <!-- Start time -->
             <div class="mb-3">
@@ -80,7 +91,7 @@
                 <div class="text-danger small">{{ form.end_time.errors.0 }}</div>
               {% endif %}
             </div>
-            
+
             <!-- Submit -->
             <div class="d-grid mt-3">
               <button type="submit" class="btn btn-success btn-lg">Confirm Edit</button>
@@ -89,7 +100,6 @@
         {% endif %}
         </div>
       </div>
-      
     </div>
   </div>
 </div>
