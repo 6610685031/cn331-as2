@@ -1,5 +1,5 @@
 # CN331-AS2 (Create Django Web App)
-6610685031 Krittin Dansai
+6610685031 Krittin Dansai\
 6610545029 Thawalporn Jindavaranon
 
 ## Cloning this repository
