@@ -2,6 +2,8 @@
 6610685031 Krittin Dansai\
 6610545029 Thawalporn Jindavaranon
 
+
+link video: <https://youtu.be/g87WBwF8XG0>
 ## Cloning this repository
 ```
 git clone https://github.com/6610685031/cn331-as2
