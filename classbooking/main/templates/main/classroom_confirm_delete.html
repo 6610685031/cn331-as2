@@ -5,7 +5,7 @@
     <h2>Delete Classroom</h2>
     <p>
       Are you sure you want to delete <strong>{{ classroom.name }}</strong> 
-      (ID: {{ classroom.internal_id }})?
+      (Room No. {{ classroom.room_number }})?
     </p>
     <form method="post">
       {% csrf_token %}
