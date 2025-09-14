@@ -1,6 +1,6 @@
 # CN331-AS2 (Create Django Web App)
-THIS README.md IS INCOMPLETE AND NEED INCREMENTAL UPDATES
-FOR NOW HERE'S HOW TO DEPLOY BASIC DJANGO APP
+6610685031 Krittin Dansai
+6610545029 Thawalporn Jindavaranon
 
 ## Cloning this repository
 ```
@@ -26,12 +26,22 @@ pip install -r requirements.txt
 ```
 If you don't have pip installed, please refer to the Python official website: https://packaging.python.org/en/latest/tutorials/installing-packages/
 
-## Running the web server
+## Create new database migrations (this is required for first time usage)
 ```
 cd classbooking
+python manage.py makemigrations
+python manage.py migrate
+```
+
+## Running the web server
+```
 python manage.py runserver
 ```
+
+## Creating Superuser (this is required for accessing admin pages)
+```python manage.py createsuperuser```
 
 ## Flush Database (for safety reasons)
 ```python manage.py flush```
 for deployment purposes
+
