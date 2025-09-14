@@ -11,7 +11,7 @@ class Classroom(models.Model):
     # Total available hours for this classroom
     total_hours = models.PositiveIntegerField(default=8)
     # Total capacity of room (It's just there)
-    capacity = models.PositiveIntegerField()
+    capacity = models.PositiveIntegerField(default=40)
     # Remaining hours available
     hours_left = models.FloatField(default=8.0)
     # Class room availability
@@ -32,6 +32,20 @@ class Classroom(models.Model):
         self.hours_left = self.total_hours
         self.is_available = True
         self.save()
+
+    def clean(self):
+        # Hours left cannot exceed total hours.
+        if self.hours_left > self.total_hours:
+            raise ValidationError("Hours left cannot exceed total hours.")
+
+    def save(self, *args, **kwargs):
+        # Ensure hours_left is never negative or over total_hours
+        if self.hours_left < 0:
+            self.hours_left = 0
+        if self.hours_left > self.total_hours:
+            self.hours_left = self.total_hours
+        self.is_available = self.hours_left > 0
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} (Room No. {self.room_number}) - {self.hours_left}h left"
