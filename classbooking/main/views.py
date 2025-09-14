@@ -43,8 +43,7 @@ def booking(request):
     user_bookings = Booking.objects.filter(user=request.user).order_by("start_time")
 
     if request.method == "POST":
-        form = BookingForm(request.POST)
-        form.instance.user = request.user
+        form = BookingForm(request.POST, user=request.user)
 
         # Debug messages for testing
         # messages.info(request, list(list(request.POST.items())))
@@ -55,7 +54,7 @@ def booking(request):
             messages.success(request, "Classroom booked successfully!")
             return redirect("overview")
     else:
-        form = BookingForm()
+        form = BookingForm(user=request.user)
 
     return render(
         request, "main/booking.html", {"form": form, "bookings": user_bookings}
@@ -64,7 +63,7 @@ def booking(request):
 
 @login_required
 def booking_edit(request, pk):
-    booking = get_object_or_404(Booking, pk, user=request.user)
+    booking = get_object_or_404(Booking, pk=pk, user=request.user)
 
     # Only allow owner or staff
     if booking.user != request.user and not request.user.is_staff:
@@ -78,33 +77,29 @@ def booking_edit(request, pk):
         appended_post["classroom"] = Booking.objects.get(pk=pk).classroom_id
 
         # Then set the request to BookingForm that has showAll=true
-        form = BookingForm(appended_post, instance=booking, showAll=True)
+        form = BookingForm(
+            appended_post, instance=booking, showAll=True, user=request.user
+        )
 
         if form.is_valid():
-            # Restore hours from old booking
-            old_classroom = booking.classroom
-            old_duration = (
-                booking.end_time - booking.start_time
-            ).total_seconds() / 3600.0
-            old_classroom.hours_left += old_duration
-            if old_classroom.hours_left > old_classroom.total_hours:
-                old_classroom.hours_left = old_classroom.total_hours
-            old_classroom.is_available = old_classroom.hours_left > 0
-            old_classroom.save()
+            # I don't even fucking know what this does
+            classroom = booking.classroom
+            duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
 
-            # Save updated booking
-            updated_booking = form.save(commit=False)
-            new_classroom = updated_booking.classroom
-            new_duration = (
-                updated_booking.end_time - updated_booking.start_time
-            ).total_seconds() / 3600.0
-            updated_booking.save()  # save booking first
-            new_classroom.update_hours(new_duration, request.user)
+            # Restore classroom hours
+            classroom.hours_left += duration
+            if classroom.hours_left > classroom.total_hours:
+                classroom.hours_left = classroom.total_hours
+            classroom.is_available = classroom.hours_left > 0
+            classroom.save()
 
-            messages.success(request, f"Booking updated successfully!")
+            # Save the form
+            form.save()
+
+            messages.success(request, "Booking updated successfully!")
             return redirect("booking")
     else:
-        form = BookingForm(instance=booking)
+        form = BookingForm(instance=booking, user=request.user)
 
     current_booking = Booking.objects.get(pk=pk)
     return render(

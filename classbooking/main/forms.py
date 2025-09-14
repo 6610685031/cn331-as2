@@ -24,6 +24,7 @@ class BookingForm(forms.ModelForm):
     ):
 
         self.showAll = showAll
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
         # Change the placeholder for the classroom dropdown
@@ -54,7 +55,7 @@ class BookingForm(forms.ModelForm):
         classroom = cleaned_data.get("classroom")
         start = cleaned_data.get("start_time")
         end = cleaned_data.get("end_time")
-        user = self.instance.user
+        user = self.user
 
         # Classroom check
         if not classroom:
@@ -73,33 +74,10 @@ class BookingForm(forms.ModelForm):
         if start and start < timezone.now():
             raise ValidationError("You cannot book a classroom in the past.")
 
-        # End must be after start
-        if start and end:
-            if end <= start:
-                raise ValidationError("End time must be after start time.")
-
-            # Enforce maximum 1 hour booking for normal users
-            # Assuming superusers/staff are allowed longer bookings
-            if user and not user.is_staff and (end - start) > timedelta(hours=1):
-                raise ValidationError(
-                    "You cannot book a classroom for more than 1 hour."
-                )
-
-        # Prevent overlapping bookings
-        if start and end and classroom:
-            overlapping = Booking.objects.filter(
-                classroom=classroom, start_time__lt=end, end_time__gt=start
-            )
-            if self.instance.pk:
-                overlapping = overlapping.exclude(pk=self.instance.pk)
-
-            if overlapping.exists():
-                raise ValidationError(
-                    "This classroom is already booked for the selected time."
-                )
-
         # Check time validity
-        if start and end:
+        if start and end and classroom:
+
+            # If end time is before start time throws an error
             duration = (end - start).total_seconds() / 3600.0  # in hours
 
             if duration <= 0:
@@ -126,5 +104,40 @@ class BookingForm(forms.ModelForm):
                 raise forms.ValidationError(
                     f"{classroom.name} is already booked during the selected time."
                 )
+
+            # --- ADMIN PERMISSION ---
+
+            # Enforce maximum 1 hour booking for normal users
+            # Assuming superusers/staff are allowed longer bookings
+            if user and not user.is_staff and (end - start) > timedelta(hours=1):
+                raise ValidationError(
+                    "You cannot book a classroom for more than 1 hour."
+                )
+
+            # Only one booking per classroom per user (unless staff)
+            if self.user and not self.user.is_staff:
+                existing = Booking.objects.filter(user=self.user, classroom=classroom)
+                if self.instance.pk:
+                    existing = existing.exclude(pk=self.instance.pk)
+                if existing.exists():
+                    raise forms.ValidationError(
+                        "You have already booked this classroom. Normal users can only book each classroom once."
+                    )
+
+            # # OLD: End must be after start
+            # if end <= start:
+            #     raise ValidationError("End time must be after start time.")
+
+            # # OLD: Prevent overlapping bookings
+            # overlapping = Booking.objects.filter(
+            #     classroom=classroom, start_time__lt=end, end_time__gt=start
+            # )
+            # if self.instance.pk:
+            #     overlapping = overlapping.exclude(pk=self.instance.pk)
+
+            # if overlapping.exists():
+            #     raise ValidationError(
+            #         "This classroom is already booked for the selected time."
+            #     )
 
         return cleaned_data
