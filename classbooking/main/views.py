@@ -64,7 +64,7 @@ def booking(request):
 
 @login_required
 def booking_edit(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
+    booking = get_object_or_404(Booking, pk, user=request.user)
 
     # Only allow owner or staff
     if booking.user != request.user and not request.user.is_staff:
@@ -81,9 +81,28 @@ def booking_edit(request, pk):
         form = BookingForm(appended_post, instance=booking, showAll=True)
 
         if form.is_valid():
-            form.save()
-            messages.success(request, "Booking updated successfully.")
-            return redirect("overview")
+            # Restore hours from old booking
+            old_classroom = booking.classroom
+            old_duration = (
+                booking.end_time - booking.start_time
+            ).total_seconds() / 3600.0
+            old_classroom.hours_left += old_duration
+            if old_classroom.hours_left > old_classroom.total_hours:
+                old_classroom.hours_left = old_classroom.total_hours
+            old_classroom.is_available = old_classroom.hours_left > 0
+            old_classroom.save()
+
+            # Save updated booking
+            updated_booking = form.save(commit=False)
+            new_classroom = updated_booking.classroom
+            new_duration = (
+                updated_booking.end_time - updated_booking.start_time
+            ).total_seconds() / 3600.0
+            updated_booking.save()  # save booking first
+            new_classroom.update_hours(new_duration, request.user)
+
+            messages.success(request, f"Booking updated successfully!")
+            return redirect("booking")
     else:
         form = BookingForm(instance=booking)
 
@@ -103,12 +122,25 @@ def booking_edit(request, pk):
 
 @login_required
 def booking_cancel(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
+    booking = get_object_or_404(Booking, pk=pk, user=request.user)
 
     # Permission checker
     if booking.user != request.user and not request.user.is_staff:
         raise PermissionDenied("You cannot cancel this booking.")
 
+    # Calculate booked hours
+    classroom = booking.classroom
+    duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
+
+    # Restore classroom hours
+    classroom.hours_left += duration
+    if classroom.hours_left > classroom.total_hours:
+        classroom.hours_left = classroom.total_hours
+    classroom.is_available = classroom.hours_left > 0
+    classroom.save()
+
+    # Delete booking
     booking.delete()
-    messages.success(request, "Booking cancelled successfully.")
-    return redirect("overview")
+
+    messages.success(request, f"Your booking for {classroom.name} has been canceled.")
+    return redirect("booking")  # Redirect back to your booking page

@@ -56,6 +56,10 @@ class BookingForm(forms.ModelForm):
         end = cleaned_data.get("end_time")
         user = self.instance.user
 
+        # Classroom check
+        if not classroom:
+            raise forms.ValidationError("Please select a classroom.")
+
         # Convert naive datetimes (from datetime-local) to aware, in current timezone
         if start and timezone.is_naive(start):
             start = timezone.make_aware(start, timezone.get_current_timezone())
@@ -92,6 +96,35 @@ class BookingForm(forms.ModelForm):
             if overlapping.exists():
                 raise ValidationError(
                     "This classroom is already booked for the selected time."
+                )
+
+        # Check time validity
+        if start and end:
+            duration = (end - start).total_seconds() / 3600.0  # in hours
+
+            if duration <= 0:
+                raise forms.ValidationError("End time must be after start time.")
+
+            # Check if booking exceeds remaining hours
+            if duration > classroom.hours_left:
+                raise forms.ValidationError(
+                    f"This classroom only has {classroom.hours_left:.2f} hours left."
+                )
+
+            # Check for overlapping bookings
+            overlaps = Booking.objects.filter(
+                classroom=classroom,
+                start_time__lt=end,  # booking starts before this one ends
+                end_time__gt=start,  # booking ends after this one starts
+            )
+
+            # If editing an existing booking, exclude itself
+            if self.instance.pk:
+                overlaps = overlaps.exclude(pk=self.instance.pk)
+
+            if overlaps.exists():
+                raise forms.ValidationError(
+                    f"{classroom.name} is already booked during the selected time."
                 )
 
         return cleaned_data
