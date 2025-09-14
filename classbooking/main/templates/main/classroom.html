@@ -28,10 +28,7 @@
 
             {% if request.user.is_staff %}
               <a href="{% url 'classroom_edit' room.id %}" class="btn btn-sm btn-warning">Edit</a>
-                <form method="post" action="{% url 'classroom_delete' room.id %}" class="display-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
+              <a href="{% url 'classroom_delete' room.id %}" class="btn btn-sm btn-danger display-inline">Delete</a>
             {% endif %}
           </div>
         </div>
