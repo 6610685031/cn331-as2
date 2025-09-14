@@ -86,10 +86,18 @@ def booking_edit(request, pk):
             return redirect("overview")
     else:
         form = BookingForm(instance=booking)
+
+    current_booking = Booking.objects.get(pk=pk)
     return render(
         request,
         "main/booking.html",
-        {"form": form, "bookings": booking, "edit_mode": "on"},
+        {
+            "form": form,
+            # Actually we don't need it but leave it in anyways
+            "bookings": booking,
+            "edit_mode": "on",
+            "current_booking_name": current_booking.classroom,
+        },
     )
 
 
