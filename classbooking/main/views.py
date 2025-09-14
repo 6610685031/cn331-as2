@@ -40,7 +40,12 @@ def classroom(request):
 
 @login_required
 def booking(request):
-    user_bookings = Booking.objects.filter(user=request.user).order_by("start_time")
+    if request.user.is_staff:
+        # Admins see every booking
+        user_bookings = Booking.objects.all()
+    else:
+        # Normal users see only their own
+        user_bookings = Booking.objects.filter(user=request.user).order_by("start_time")
 
     if request.method == "POST":
         form = BookingForm(request.POST, user=request.user)
