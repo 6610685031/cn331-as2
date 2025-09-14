@@ -23,6 +23,15 @@
         font-family: sans-serif;
         color: white;
         font-family: "IBM Plex Sans Thai";
+      } 
+
+      body {
+        background: url("{% load static %} {% static 'home/home_fallback.jpg' %}") center/cover no-repeat;
+      }
+
+      .bg-light
+      {
+        --bs-bg-opacity: 0 !important;
       }
 
       /* make video cover screen */
