@@ -4,23 +4,26 @@
 <!---->
 {% block content %}
 <div class="container mt-4">
-  <h2>Classroom</h2>
+  <div class="content-card">
+    <h2>Classrooms</h2>
 
-  {% if request.user.is_staff %}
-    <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
-  {% endif %}
+    {% if request.user.is_staff %}
+      <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
+    {% endif %}
 
-  <div class="row">
-    {% for room in classrooms %}
-      <div class="col-md-4">
-        <div class="card mb-3 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">{{ room.name }}</h5>
-            <p class="card-text">
-              Room Number: {{ room.room_number }} <br>
-              Room Capacity: {{ room.capacity }} <br>
+    <div class="row">
+      {% for room in classrooms %}
+        <div class="col-md-4">
+          <div class="content-card">
+            <h5>{{ room.name }}</h5>
+            <p>
+              Internal ID: {{ room.internal_id }} <br>
               Hours Left: {{ room.hours_left }} / {{ room.total_hours }} <br>
-              Status: {% if room.is_available %}<span class="text-success">Available</span>{% else %}<span class="text-danger">Booked</span>{% endif %}
+              Status: {% if room.is_available %}
+                <span class="text-success">Available</span>
+              {% else %}
+                <span class="text-danger">Booked</span>
+              {% endif %}
               {% if room.booked_by %}
                 <br>Booked by: {{ room.booked_by.username }}
               {% endif %}
@@ -32,8 +35,8 @@
             {% endif %}
           </div>
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock content %}

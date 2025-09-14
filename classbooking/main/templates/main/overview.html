@@ -3,14 +3,14 @@
 {% block title %} Overview {% endblock title %}
 <!---->
 {% block content %}
-<h2 class="text-white">Classroom Timetable Overview</h2>
-
-<div class="row">
+<div class="content-card">
+  <h2 class="text-dark">Classroom Timetable Overview</h2>
+  <div class="row">
     <!-- Calendar -->
     <div class="col-md-6">
         <div class="card p-3">
             <h4>Calendar View</h4>
-            <div id="calendar"></div>
+            <div id="calendar" class="scroll-box"></div>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
     <div class="col-md-6">
         <div class="card p-3">
             <h4>Timeline View</h4>
-            <table class="table table-bordered">
+            <table class="table table-bordered scroll-box">
                 <thead>
                     <tr>
                         <th>Classroom</th>
@@ -38,12 +38,13 @@
                         <td>{{ b.end_time }}</td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4">No bookings yet.</td></tr>
+                    <tr><td colspan="5">No bookings yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+</div>
 </div>
 
 <!-- FullCalendar -->

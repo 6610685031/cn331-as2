@@ -28,7 +28,40 @@
       .display-inline {
         display: inline !important;
       }
-    </style>
+      .content-card {
+        background: rgba(255, 255, 255, 0.9); /* semi-transparent white */
+        border-radius: 1rem;                  /* rounded corners */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* soft shadow */
+        padding: 1.5rem;                      /* consistent padding */
+        margin-bottom: 1.5rem;
+      }
+      .content-card h2,
+      .content-card h5,
+      .content-card p {
+        color: #212529; /* force Bootstrap dark text */
+      }
+    .scroll-box {
+      height: 65vh;              /* make tall */
+      overflow-y: auto;          /* scroll vertically if needed */
+      overflow-x: hidden;        /* prevent horizontal scroll unless necessary */
+      border: 1px solid #dee2e6; /* subtle Bootstrap-style border */
+      border-radius: 0.5rem;
+      background: #fff;          /* ensure text visibility */
+      padding: 0.5rem;
+    }
+
+    /* Optional: slim modern scrollbar */
+    .scroll-box::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scroll-box::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    .scroll-box::-webkit-scrollbar-track {
+      background: transparent;
+    }
+</style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -73,6 +106,6 @@
     </div>
     {% endif %}
 
-    <div class="container mt-4">{% block content %}{% endblock content %}</div>
+    <div class="container-fluid mt-4 px-4">{% block content %}{% endblock content %}</div>
   </body>
 </html>
