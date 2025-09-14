@@ -4,15 +4,18 @@ from django.core.exceptions import ValidationError
 
 
 class Classroom(models.Model):
-    name = models.CharField(max_length=100)
-    capacity = models.IntegerField()
+    # Default the name to "Generic Classroom" to make existing rows populatable
+    name = models.CharField(max_length=100, default="Generic Classroom", null=True)
+    # Make the room number unique
+    room_number = models.PositiveIntegerField(unique=True)
+    capacity = models.PositiveIntegerField()
     is_available = models.BooleanField(default=True)
     booked_by = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL
     )
 
     def __str__(self):
-        return self.name
+        return f"{self.name} (Room No. {self.room_number})"
 
 
 class Booking(models.Model):
@@ -37,4 +40,4 @@ class Booking(models.Model):
             )
 
     def __str__(self):
-        return f"{self.classroom.name} reserved by {self.user.username}"
+        return f"{self.classroom.name} (reserved by {self.user.username})"
