@@ -68,7 +68,11 @@ def booking(request):
 
 @login_required
 def booking_edit(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    # If admin then allow for all bookings to be edited
+    if request.user.is_staff:
+        booking = get_object_or_404(Booking, pk=pk)
+    else:
+        booking = get_object_or_404(Booking, pk=pk, user=request.user)
 
     # Only allow owner or staff
     if booking.user != request.user and not request.user.is_staff:
@@ -122,7 +126,11 @@ def booking_edit(request, pk):
 
 @login_required
 def booking_cancel(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    # If admin then allow for all bookings to be canceled
+    if request.user.is_staff:
+        booking = get_object_or_404(Booking, pk=pk)
+    else:
+        booking = get_object_or_404(Booking, pk=pk, user=request.user)
 
     # Permission checker
     if booking.user != request.user and not request.user.is_staff:
