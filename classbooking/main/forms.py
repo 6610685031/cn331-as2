@@ -141,3 +141,16 @@ class BookingForm(forms.ModelForm):
             #     )
 
         return cleaned_data
+
+
+class ClassroomForm(forms.ModelForm):
+    class Meta:
+        model = Classroom
+        fields = [
+            "name",
+            "room_number",
+            "total_hours",
+            "capacity",
+            "hours_left",
+            "is_available",
+        ]

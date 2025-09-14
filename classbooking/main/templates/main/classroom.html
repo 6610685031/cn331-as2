@@ -3,30 +3,40 @@
 {% block title %} Classrooms {% endblock title %}
 <!---->
 {% block content %}
-<h2 class="text-white">All Classrooms</h2>
+<div class="container mt-4">
+  <h2>Classroom</h2>
 
-<table class="table table-striped bg-light">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Room number</th>
-      <th>Capacity</th>
-      <th>Available</th>
-    </tr>
-  </thead>
-  <tbody>
+  {% if request.user.is_staff %}
+    <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
+  {% endif %}
+
+  <div class="row">
     {% for room in classrooms %}
-    <tr>
-      <td>{{ room.name }}</td>
-      <td>{{ room.room_number }}</td>
-      <td>{{ room.capacity }}</td>
-      <td>{% if room.is_available %}✅ Yes{% else %}❌ No{% endif %}</td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="4">No classrooms available</td>
-    </tr>
+      <div class="col-md-4">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ room.name }}</h5>
+            <p class="card-text">
+              Room Number: {{ room.room_number }} <br>
+              Room Capacity: {{ room.capacity }} <br>
+              Hours Left: {{ room.hours_left }} / {{ room.total_hours }} <br>
+              Status: {% if room.is_available %}<span class="text-success">Available</span>{% else %}<span class="text-danger">Booked</span>{% endif %}
+              {% if room.booked_by %}
+                <br>Booked by: {{ room.booked_by.username }}
+              {% endif %}
+            </p>
+
+            {% if request.user.is_staff %}
+              <a href="{% url 'classroom_edit' room.id %}" class="btn btn-sm btn-warning">Edit</a>
+                <form method="post" action="{% url 'classroom_delete' room.id %}" class="display-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 {% endblock content %}

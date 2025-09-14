@@ -25,6 +25,9 @@
       .messages-infront {
         z-index: 1080; width: 100%; max-width: 500px;
       }
+      .display-inline {
+        display: inline !important;
+      }
     </style>
   </head>
   <body>
@@ -37,7 +40,7 @@
               <a class="nav-link" href="{% url 'overview' %}">Overview</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'classroom' %}">Classrooms</a>
+              <a class="nav-link" href="{% url 'classroom' %}">Classroom</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'booking' %}">Booking</a>

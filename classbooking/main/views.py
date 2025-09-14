@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
@@ -7,7 +8,7 @@ from django.utils.timezone import localtime
 
 
 from .models import Classroom, Booking
-from .forms import BookingForm
+from .forms import ClassroomForm, BookingForm
 
 
 @login_required
@@ -30,12 +31,6 @@ def overview(request):
         "main/overview.html",
         {"events": events, "bookings": bookings, "server_timezone": settings.TIME_ZONE},
     )
-
-
-@login_required
-def classroom(request):
-    classrooms = Classroom.objects.all()
-    return render(request, "main/classroom.html", {"classrooms": classrooms})
 
 
 @login_required
@@ -152,3 +147,49 @@ def booking_cancel(request, pk):
 
     messages.success(request, f"Your booking for {classroom.name} has been canceled.")
     return redirect("booking")  # Redirect back to your booking page
+
+
+@login_required
+def classroom(request):
+    classrooms = Classroom.objects.all()
+    return render(request, "main/classroom.html", {"classrooms": classrooms})
+
+
+@staff_member_required
+def classroom_add(request):
+    if request.method == "POST":
+        form = ClassroomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("classroom")
+    else:
+        form = ClassroomForm()
+    return render(
+        request, "main/classroom_form.html", {"form": form, "title": "Add Classroom"}
+    )
+
+
+@staff_member_required
+def classroom_edit(request, pk):
+    classroom = get_object_or_404(Classroom, pk=pk)
+    if request.method == "POST":
+        form = ClassroomForm(request.POST, instance=classroom)
+        if form.is_valid():
+            form.save()
+            return redirect("classroom")
+    else:
+        form = ClassroomForm(instance=classroom)
+    return render(
+        request, "main/classroom_form.html", {"form": form, "title": "Edit Classroom"}
+    )
+
+
+@staff_member_required
+def classroom_delete(request, pk):
+    classroom = get_object_or_404(Classroom, pk=pk)
+    if request.method == "POST":
+        classroom.delete()
+        return redirect("classroom")
+    return render(
+        request, "main/classroom_confirm_delete.html", {"classroom": classroom}
+    )
