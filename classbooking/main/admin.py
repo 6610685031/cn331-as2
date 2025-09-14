@@ -13,10 +13,9 @@ class ClassroomAdmin(admin.ModelAdmin):
         "hours_left",
         "capacity",
         "is_available",
-        "booked_by",
     )
     list_filter = ("is_available",)
-    search_fields = ("name", "room_number", "booked_by__username")
+    search_fields = ("name", "room_number")
 
 
 @admin.register(Booking)

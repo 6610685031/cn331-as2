@@ -16,10 +16,6 @@ class Classroom(models.Model):
     hours_left = models.FloatField(default=8.0)
     # Class room availability
     is_available = models.BooleanField(default=True)
-    # Who booked the classroom
-    booked_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True
-    )
 
     def update_hours(self, duration_hours, user):
         # Deduct hours when booked
@@ -29,14 +25,12 @@ class Classroom(models.Model):
         else:
             self.hours_left -= duration_hours
             self.is_available = True
-        self.booked_by = user
         self.save()
 
     def reset_hours(self):
         # Reset daily or weekly depending on rules
         self.hours_left = self.total_hours
         self.is_available = True
-        self.booked_by = None
         self.save()
 
     def __str__(self):

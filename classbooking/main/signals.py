@@ -8,7 +8,6 @@ def update_classroom_on_booking(sender, instance, created, **kwargs):
     # Mark classroom as unavailable when a booking is created or updated.
     classroom = instance.classroom
     classroom.is_available = False
-    classroom.booked_by = instance.user
     classroom.save()
 
 
@@ -17,5 +16,4 @@ def update_classroom_on_booking_delete(sender, instance, **kwargs):
     # Mark classroom as available again when a booking is deleted.
     classroom = instance.classroom
     classroom.is_available = True
-    classroom.booked_by = None
     classroom.save()
