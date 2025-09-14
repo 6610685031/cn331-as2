@@ -20,6 +20,7 @@
               <thead class="table-light">
                 <tr>
                   <th>Classroom</th>
+                  <th>Room number</th>
                   <th>Start</th>
                   <th>End</th>
                   <th>Actions</th>
@@ -29,6 +30,7 @@
                 {% for b in bookings %}
                 <tr>
                   <td>{{ b.classroom.name }}</td>
+                  <td>{{ b.classroom.room_number }}</td>
                   <td>{{ b.start_time|date:"Y-m-d H:i" }}</td>
                   <td>{{ b.end_time|date:"Y-m-d H:i" }}</td>
                   <td>
@@ -62,7 +64,7 @@
           {% load form_tags %}
           <form method="post" novalidate>
             {% csrf_token %}
-            
+
             <!-- Error -->
             {% if form.non_field_errors %}
             <div class="alert alert-block alert-danger">

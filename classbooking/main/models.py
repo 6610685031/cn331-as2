@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 class Classroom(models.Model):
     # Default the name to "Generic Classroom" to make existing rows populatable
-    name = models.CharField(max_length=100, default="Generic Classroom", null=True)
+    name = models.CharField(max_length=100, default="Generic Classroom")
     # Make the room number unique
     room_number = models.PositiveIntegerField(unique=True)
     capacity = models.PositiveIntegerField()
