@@ -165,7 +165,7 @@ def classroom_add(request):
     else:
         form = ClassroomForm()
     return render(
-        request, "main/classroom_form.html", {"form": form, "title": "Add Classroom"}
+        request, "main/classroom/edit.html", {"form": form, "title": "Add Classroom"}
     )
 
 
@@ -180,16 +180,14 @@ def classroom_edit(request, pk):
     else:
         form = ClassroomForm(instance=classroom)
     return render(
-        request, "main/classroom_form.html", {"form": form, "title": "Edit Classroom"}
+        request, "main/classroom/edit.html", {"form": form, "title": "Edit Classroom"}
     )
 
 
 @staff_member_required
-def classroom_delete(request, pk):
+def classroom_remove(request, pk):
     classroom = get_object_or_404(Classroom, pk=pk)
     if request.method == "POST":
         classroom.delete()
         return redirect("classroom")
-    return render(
-        request, "main/classroom_confirm_delete.html", {"classroom": classroom}
-    )
+    return render(request, "main/classroom/remove.html", {"classroom": classroom})
