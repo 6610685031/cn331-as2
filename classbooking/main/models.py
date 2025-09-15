@@ -9,11 +9,11 @@ class Classroom(models.Model):
     # Make the room number unique
     room_number = models.PositiveIntegerField(unique=True)
     # Total available hours for this classroom
-    total_hours = models.PositiveIntegerField(default=8)
+    total_hours = models.FloatField(default=8.0)
     # Total capacity of room (It's just there)
     capacity = models.PositiveIntegerField(default=40)
     # Remaining hours available
-    hours_left = models.FloatField(default=8.0)
+    hours_left = models.FloatField(default=8.0, editable=False)
     # Class room availability
     is_available = models.BooleanField(default=True)
 
@@ -45,6 +45,10 @@ class Classroom(models.Model):
         if self.hours_left > self.total_hours:
             self.hours_left = self.total_hours
         self.is_available = self.hours_left > 0
+
+        # Do the same with total_hours
+        if self.total_hours < 0:
+            self.total_hours = 0
         super().save(*args, **kwargs)
 
     def __str__(self):

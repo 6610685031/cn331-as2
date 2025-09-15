@@ -151,6 +151,5 @@ class ClassroomForm(forms.ModelForm):
             "room_number",
             "total_hours",
             "capacity",
-            "hours_left",
             "is_available",
         ]
