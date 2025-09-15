@@ -1,8 +1,9 @@
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import localtime
 
@@ -52,7 +53,7 @@ def booking(request):
             booking.user = request.user  # Assign logged-in user
             booking.save()  # Signals update classroom availability automatically
             messages.success(request, "Classroom booked successfully!")
-            return redirect("overview")
+            return redirect("booking")
     else:
         form = BookingForm(user=request.user)
 
@@ -95,6 +96,8 @@ def booking_edit(request, pk):
             if classroom.hours_left > classroom.total_hours:
                 classroom.hours_left = classroom.total_hours
             classroom.is_available = classroom.hours_left > 0
+
+            # Save the classroom object
             classroom.save()
 
             # Save the form
@@ -174,9 +177,56 @@ def classroom_edit(request, pk):
     classroom = get_object_or_404(Classroom, pk=pk)
     if request.method == "POST":
         form = ClassroomForm(request.POST, instance=classroom)
+
         if form.is_valid():
+            # get the unchanged classroom data
+            old_classroom = get_object_or_404(Classroom, pk=pk)
+
+            # create variable named total_hours_diff to check changed value (total_hours_diff can only go positive)
+            total_hours_diff = classroom.total_hours - old_classroom.total_hours
+            total_hours_diff = total_hours_diff if not (total_hours_diff < 0) else 0
+
+            # get already booked hours from old classroom (before form changes)
+            hours_left_diff = old_classroom.hours_left - old_classroom.total_hours
+            # if total hours diff is more than 0 don't change hours left
+            hours_left_diff = hours_left_diff if not (total_hours_diff > 0) else 0
+
+            # DEBUG: messages for total_hours_diff and hours_left_diff
+            messages.success(
+                request,
+                f"total_hours_diff = {total_hours_diff}, hours_left_diff = {hours_left_diff}",
+            )
+
+            # commit the form
             form.save()
-            return redirect("classroom")
+
+            # if hours_left is less than 0 then something is totally wrong with the admin
+            # since you can't directly set hours_left in the first place, it must be the admin setting it lower than 0
+            if (classroom.hours_left + total_hours_diff + hours_left_diff) < 0:
+                # raise an error
+                form.add_error(
+                    "total_hours",
+                    forms.ValidationError(
+                        "Total hours must not be lower than the total hours booked from all bookings."
+                    ),
+                )
+
+                # reset the classroom value
+                classroom.total_hours = old_classroom.total_hours
+                classroom.hours_left = old_classroom.hours_left
+
+                # then save the classroom object
+                classroom.save()
+            else:
+
+                # if total_hours increase then increment hours_left by the same amount
+                classroom.hours_left = (
+                    classroom.hours_left + total_hours_diff + hours_left_diff
+                )
+                # then save the classroom object
+                classroom.save()
+
+                return redirect("classroom")
     else:
         form = ClassroomForm(instance=classroom)
     return render(
