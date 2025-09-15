@@ -23,9 +23,12 @@
               <thead class="table-light">
                 <tr>
                   <th>Classroom</th>
-                  <th>Room number</th>
+                  <th>Room No.</th>
                   <th>Start</th>
                   <th>End</th>
+                  {% if request.user.is_staff %}
+                  <th>Booked by</th>
+                  {% endif %}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -36,6 +39,9 @@
                   <td>{{ b.classroom.room_number }}</td>
                   <td>{{ b.start_time|date:"Y-m-d H:i" }}</td>
                   <td>{{ b.end_time|date:"Y-m-d H:i" }}</td>
+                  {% if request.user.is_staff %}
+                  <td>{{ b.user.username }}</td>
+                  {% endif %}
                   <td>
                     <a href="{% url 'booking_edit' b.id %}" class="btn btn-sm btn-primary">Edit</a>
                     <a href="{% url 'booking_cancel' b.id %}" class="btn btn-sm btn-danger"
