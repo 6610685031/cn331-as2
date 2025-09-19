@@ -87,9 +87,12 @@ def booking_edit(request, pk):
         )
 
         if form.is_valid():
-            # I don't even fucking know what this does
+            # Get the correct classroom and unedited booking object
+            old_booking = get_object_or_404(Booking, pk=pk)
             classroom = booking.classroom
-            duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
+            duration = (
+                old_booking.end_time - old_booking.start_time
+            ).total_seconds() / 3600.0
 
             # Restore classroom hours
             classroom.hours_left += duration
