@@ -5,6 +5,11 @@
 {% endblock title %}
 <!---->
 {% block content %}
+  <style>
+  .progress {
+    height: 10px;
+  }
+  </style>
   <div class="container mt-4">
     <div class="content-card">
       <h2>Classrooms</h2>
@@ -22,8 +27,6 @@
                 <p>
                   Room Number: {{ room.room_number }}
                   <br>
-                  Hours Left: {{ room.hours_left }} / {{ room.total_hours }}
-                  <br>
                   Status:
                   {% if room.is_available %}
                     <span class="text-success">Available</span>
@@ -34,7 +37,23 @@
                     <br>
                     Booked by: {{ room.booked_by.username }}
                   {% endif %}
+                  <br>
+                  Hours Left: {{ room.hours_left }} / {{ room.total_hours }}
+                  <br>
                 </p>
+                <!-- Hours Left Progress Bar -->
+                {% load divide %}
+                <div class="mb-2">
+                  <div class="progress">
+                    <div class="progress-bar {% if room.hours_left|divide:room.total_hours > 50 %} bg-success {% elif room.hours_left|divide:room.total_hours > 25 %} bg-warning {% else %} bg-danger {% endif %}"
+                         role="progressbar"
+                         style="width: {{ room.hours_left|divide:room.total_hours|floatformat:0 }}%"
+                         aria-valuenow="{{ room.hours_left }}"
+                         aria-valuemin="0"
+                         aria-valuemax="{{ room.total_hours }}"></div>
+                  </div>
+                </div>
+                <br>
                 {% if request.user.is_staff %}
                   <a href="{% url 'classroom_edit' room.id %}"
                      class="btn btn-sm btn-warning">Edit</a>
