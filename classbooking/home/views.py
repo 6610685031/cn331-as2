@@ -105,13 +105,11 @@ def auth_deletion(request):
         user = request.user
 
         if user.is_superuser or user.is_staff:
-            messages.warning(
-                request, "Admin and superuser accounts cannot be deleted here."
-            )
+            messages.warning(request, "ไม่สามารถลบบัญชีผู้ดูแลระบบได้ที่นี่")
             return redirect("overview")  # redirect back to a safe page
 
         user.delete()
-        messages.success(request, "Your account has been deleted successfully.")
+        messages.success(request, "บัญชีของคุณถูกลบเรียบร้อยแล้ว")
         return redirect("auth_login")  # redirect to login or homepage
 
     return render(request, "main/deletion.html")

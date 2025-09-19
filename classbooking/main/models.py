@@ -58,7 +58,7 @@ class Classroom(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} (Room No. {self.room_number}) - {self.hours_left}h left"
+        return f"{self.name} (ห้อง {self.room_number}) - เหลือ {self.hours_left} ชม."
 
 
 class Booking(models.Model):
@@ -85,9 +85,7 @@ class Booking(models.Model):
         ).exclude(pk=self.pk)
 
         if overlapping.exists():
-            raise ValidationError(
-                "This classroom is already booked for the selected time."
-            )
+            raise ValidationError("ห้องเรียนนี้ถูกจองตามเวลาที่เลือกไปแล้ว")
 
     def save(self, *args, **kwargs):
         duration = (
@@ -100,4 +98,4 @@ class Booking(models.Model):
         self.classroom.update_hours(duration, self.user)
 
     def __str__(self):
-        return f"{self.classroom} booked by {self.user} from {self.start_time} to {self.end_time}"
+        return f"{self.classroom} จองโดย {self.user} ตั้งแต่ {self.start_time} ถึง {self.end_time}"

@@ -20,7 +20,7 @@ def overview(request):
     for b in bookings:
         events.append(
             {
-                "title": f"{b.classroom.name} ({b.classroom.room_number}) - {b.user.username}",
+                "title": f"{b.classroom.name} (ห้อง {b.classroom.room_number}) - {b.user.username}",
                 "start": localtime(b.start_time).isoformat(),
                 "end": localtime(b.end_time).isoformat(),
                 "color": "#f56954",  # Red for booked
@@ -52,7 +52,7 @@ def booking(request):
             booking = form.save(commit=False)
             booking.user = request.user  # Assign logged-in user
             booking.save()  # Signals update classroom availability automatically
-            messages.success(request, "Classroom booked successfully!")
+            messages.success(request, "ห้องเรียนถูกจองเรียบร้อยแล้ว")
             return redirect("booking")
     else:
         form = BookingForm(user=request.user)
@@ -72,7 +72,7 @@ def booking_edit(request, pk):
 
     # Only allow owner or staff
     if booking.user != request.user and not request.user.is_staff:
-        raise PermissionDenied("You cannot edit this booking.")
+        raise PermissionDenied("คุณไม่สามารถแก้ไขการจองนี้ได้")
 
     if request.method == "POST":
 
@@ -106,7 +106,7 @@ def booking_edit(request, pk):
             # Save the form
             form.save()
 
-            messages.success(request, "Booking updated successfully!")
+            messages.success(request, "อัปเดตการจองเรียบร้อยแล้ว")
             return redirect("booking")
     else:
         form = BookingForm(instance=booking, user=request.user)
@@ -136,7 +136,7 @@ def booking_cancel(request, pk):
     if request.method == "POST":
         # Permission checker
         if booking.user != request.user and not request.user.is_staff:
-            raise PermissionDenied("You cannot cancel this booking.")
+            raise PermissionDenied("คุณไม่สามารถยกเลิกการจองนี้ได้")
 
         # Calculate booked hours
         classroom = booking.classroom
@@ -153,7 +153,7 @@ def booking_cancel(request, pk):
         booking.delete()
 
         messages.success(
-            request, f"Your booking for {classroom.name} has been canceled."
+            request, f"การจองของคุณสำหรับห้องเรียน {classroom.name} ถูกยกเลิกแล้ว"
         )
         return redirect("booking")  # Redirect back to your booking page
 
@@ -215,7 +215,7 @@ def classroom_edit(request, pk):
                 form.add_error(
                     "total_hours",
                     forms.ValidationError(
-                        "Total hours must not be lower than the total hours booked from all bookings."
+                        "จำนวนชั่วโมงรวมจะต้องไม่ต่ำกว่าจำนวนชั่วโมงรวมที่จองจากการจองทั้งหมด"
                     ),
                 )
 
@@ -237,9 +237,7 @@ def classroom_edit(request, pk):
                 return redirect("classroom")
     else:
         form = ClassroomForm(instance=classroom)
-    return render(
-        request, "main/classroom/edit.html", {"form": form, "title": "Edit Classroom"}
-    )
+    return render(request, "main/classroom/edit.html", {"form": form})
 
 
 @staff_member_required

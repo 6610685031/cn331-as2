@@ -1,16 +1,21 @@
 {% extends "main/master/index.html" %}
+<!---->
+{% block title %}
+  ลบห้องเรียน
+{% endblock title %}
+<!---->
 {% block content %}
   <div class="container mt-4">
     <div class="content-card">
-      <h2>Delete Classroom</h2>
+      <h2>ลบห้องเรียน</h2>
       <p>
-        Are you sure you want to delete <strong>{{ classroom.name }}</strong>
-        (Room No. {{ classroom.room_number }})?
+        คุณแน่ใจว่าต้องการลบห้องเรียน <strong>{{ classroom.name }}</strong>
+        (หมายเลขห้อง {{ classroom.room_number }}) หรือไม่?
       </p>
       <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="{% url 'classroom' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">ยืนยันการลบ</button>
+        <a href="{% url 'classroom' %}" class="btn btn-secondary">ยกเลิก</a>
       </form>
     </div>
   </div>

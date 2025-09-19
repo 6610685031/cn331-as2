@@ -13,6 +13,11 @@ class BookingForm(forms.ModelForm):
             "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+        labels = {
+            "classroom": "ห้องเรียนที่เลือก",
+            "start_time": "เวลาเริ่มการจอง",
+            "end_time": "เวลาสิ้นสุดการจอง",
+        }
 
     # Add showAll to get whether if we want to make all classroom fields visible or not
     # Defaults at False
@@ -28,7 +33,7 @@ class BookingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Change the placeholder for the classroom dropdown
-        self.fields["classroom"].empty_label = "Select a classroom"
+        self.fields["classroom"].empty_label = "เลือกห้องเรียนที่ต้องการจอง"
 
         # Only show classrooms that are currently available
         if not showAll:
@@ -70,7 +75,7 @@ class BookingForm(forms.ModelForm):
 
             # Prevent booking in the past
             if start and start < timezone.now():
-                raise ValidationError("You cannot book a classroom in the past.")
+                raise ValidationError("คุณไม่สามารถจองห้องเรียนในอดีตได้")
 
             # Check time validity
             if start and end:
@@ -79,12 +84,12 @@ class BookingForm(forms.ModelForm):
                 duration = (end - start).total_seconds() / 3600.0  # in hours
 
                 if duration <= 0:
-                    raise ValidationError("End time must be after start time.")
+                    raise ValidationError("เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่มต้น")
 
                 # Check if booking exceeds remaining hours
                 if duration > classroom.hours_left:
                     raise ValidationError(
-                        f"This classroom only has {classroom.hours_left:.2f} hours left."
+                        f"ห้องเรียนนี้เหลือเวลาอีกเพียง {classroom.hours_left:.2f} ชั่วโมงเท่านั้น"
                     )
 
                 # Check for overlapping bookings
@@ -100,7 +105,7 @@ class BookingForm(forms.ModelForm):
 
                 if overlaps.exists():
                     raise ValidationError(
-                        f"{classroom.name} is already booked during the selected time."
+                        f"ห้องเรียน {classroom.name} ถูกจองแล้วในช่วงเวลาที่เลือกไปแล้ว"
                     )
 
                 # --- ADMIN PERMISSION ---
@@ -109,7 +114,7 @@ class BookingForm(forms.ModelForm):
                 # Assuming superusers/staff are allowed longer bookings
                 if user and not user.is_staff and (end - start) > timedelta(hours=1):
                     raise ValidationError(
-                        "You cannot book a classroom for more than 1 hour."
+                        "คุณไม่สามารถจองห้องเรียนได้นานกว่า 1 ชั่วโมง ถ้าคุณไม่ใช่ผู้ดูแลระบบ"
                     )
 
                 # Only one booking per classroom per user (unless staff)
@@ -121,7 +126,7 @@ class BookingForm(forms.ModelForm):
                         existing = existing.exclude(pk=self.instance.pk)
                     if existing.exists():
                         raise ValidationError(
-                            "You have already booked this classroom. Normal users can only book each classroom once."
+                            "คุณได้จองห้องเรียนนี้แล้ว ผู้ใช้ทั่วไปสามารถจองห้องเรียนแต่ละห้องได้เพียงครั้งเดียวเท่านั้น"
                         )
 
                 # # OLD: End must be after start
@@ -153,19 +158,26 @@ class ClassroomForm(forms.ModelForm):
             "capacity",
             "is_available",
         ]
+        labels = {
+            "name": "ชื่อห้องเรียน",
+            "room_number": "หมายเลขห้อง",
+            "total_hours": "จำนวนชั่วโมงรวมที่สามารถใช้งานได้",
+            "capacity": "ขนาดนักเรียนที่รับได้",
+            "is_available": "เปิดให้จองหรือไม่",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update(
-            {"placeholder": "Please name the classroom."}
+            {"placeholder": "กรุณาตั้งชื่อห้องเรียนที่จะเปิดให้จอง"}
         )
         self.fields["room_number"].widget.attrs.update(
-            {"placeholder": "Please assign the room number."}
+            {"placeholder": "กรุณาระบุหมายเลขห้อง"}
         )
         self.fields["total_hours"].widget.attrs.update(
-            {"placeholder": "Please set the total hours available."}
+            {"placeholder": "กรุณาระบุจำนวนชั่วโมงรวมที่สามารถใช้งานได้"}
         )
         self.fields["capacity"].widget.attrs.update(
-            {"placeholder": "Please set the total capacity."}
+            {"placeholder": "กรุณากำหนดขนาดนักเรียนที่รับได้"}
         )

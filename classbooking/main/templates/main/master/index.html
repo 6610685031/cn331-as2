@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="classroom reservation webpage" />
@@ -118,15 +118,15 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'overview' %}">Overview</a>
+              <a class="nav-link" href="{% url 'overview' %}">ภาพรวม</a>
             </li>
             <div class="vr align-self-center"></div>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'classroom' %}">Classrooms</a>
+              <a class="nav-link" href="{% url 'classroom' %}">ห้องเรียน</a>
             </li>
             <div class="vr align-self-center"></div>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'booking' %}">Bookings</a>
+              <a class="nav-link" href="{% url 'booking' %}">การจอง</a>
             </li>
           </ul>
           <!-- Right side: auth -->
@@ -136,11 +136,11 @@
             </li>
             {% if not request.user.is_staff %}
               <form class="form-inline me-2" action="{% url 'auth_deletion' %}">
-                <button class="btn btn-outline-danger my-sm-0" type="submit">Delete Account</button>
+                <button class="btn btn-outline-danger my-sm-0" type="submit">ลบบัญชี</button>
               </form>
             {% endif %}
             <form class="form-inline" action="{% url 'auth_logout' %}">
-              <button class="btn btn-outline-primary my-sm-0" type="submit">Logout</button>
+              <button class="btn btn-outline-primary my-sm-0" type="submit">ออกจากระบบ</button>
             </form>
           </ul>
         </div>

@@ -1,7 +1,7 @@
 {% extends "main/master/index.html" %}
 <!---->
 {% block title %}
-  Classrooms
+  ห้องเรียน
 {% endblock title %}
 <!---->
 {% block content %}
@@ -12,10 +12,10 @@
   </style>
   <div class="container mt-4">
     <div class="content-card">
-      <h2>Classrooms</h2>
+      <h2>ห้องเรียน</h2>
       {% if request.user.is_staff %}
         <div class="d-grid mt-4">
-          <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
+          <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">เพิ่มรายชื่อห้องเรียน</a>
         </div>
       {% endif %}
       {% if classrooms %}
@@ -25,20 +25,20 @@
               <div class="content-card">
                 <h5>{{ room.name }}</h5>
                 <p>
-                  Room Number: {{ room.room_number }}
+                  หมายเลขห้อง: {{ room.room_number }}
                   <br>
-                  Status:
+                  สถานะ:
                   {% if room.is_available %}
-                    <span class="text-success">Available</span>
+                    <span class="text-success">เปิดให้จองได้</span>
                   {% else %}
-                    <span class="text-danger">Booked</span>
+                    <span class="text-danger">จองเต็มแล้ว</span>
                   {% endif %}
                   {% if room.booked_by %}
                     <br>
-                    Booked by: {{ room.booked_by.username }}
+                    จองโดย: {{ room.booked_by.username }} (และอื่นๆ)
                   {% endif %}
                   <br>
-                  Hours Left: {{ room.hours_left }} / {{ room.total_hours }}
+                  เวลาที่เหลือให้จอง: {{ room.hours_left }} จาก {{ room.total_hours }} ชม.
                   <br>
                 </p>
                 <!-- Hours Left Progress Bar -->
@@ -56,16 +56,16 @@
                 {% if request.user.is_staff %}
                   <br>
                   <a href="{% url 'classroom_edit' room.id %}"
-                     class="btn btn-sm btn-warning">Edit</a>
+                     class="btn btn-sm btn-warning">แก้ไข</a>
                   <a href="{% url 'classroom_remove' room.id %}"
-                     class="btn btn-sm btn-danger">Delete</a>
+                     class="btn btn-sm btn-danger">สั่งลบ</a>
                 {% endif %}
               </div>
             </div>
           {% endfor %}
         </div>
       {% elif not request.user.is_staff %}
-        <h5 class="text-muted mt-4">No classroom available.</h5>
+        <h5 class="text-muted mt-4">ไม่มีรายชื่อห้องเรียนในขณะนี้</h5>
       {% endif %}
     </div>
   </div>

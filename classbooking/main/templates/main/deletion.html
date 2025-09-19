@@ -1,13 +1,18 @@
 {% extends "main/master/index.html" %}
+<!---->
+{% block title %}
+    ลบบัญชี
+{% endblock title %}
+<!---->
 {% block content %}
     <div class="container mt-4">
         <div class="content-card">
-            <h2>Delete Account</h2>
-            <p class="text-danger">This action cannot be undone. All your bookings will also be deleted.</p>
+            <h2>ลบบัญชี</h2>
+            <p class="text-danger">การดำเนินการนี้ไม่สามารถย้อนกลับได้ การจองทั้งหมดของคุณจะถูกลบออกด้วย</p>
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete My Account</button>
-                <a href="{% url 'overview' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">ยืนยันการลบ</button>
+                <a href="{% url 'overview' %}" class="btn btn-secondary">ยกเลิก</a>
             </form>
         </div>
     </div>
