@@ -1,8 +1,13 @@
 {% extends "main/master/index.html" %}
+<!---->
+{% block title %}
+  Bookings
+{% endblock title %}
+<!---->
 {% block content %}
   <div class="container mt-4">
     <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="col-md-10">
         <div class="content-card">
           <h2>Classroom Booking</h2>
           <div class="card-body mt-4">
@@ -36,10 +41,10 @@
                           <td>{{ b.end_time|date:"Y-m-d H:i" }}</td>
                           {% if request.user.is_staff %}<td>{{ b.user.username }}</td>{% endif %}
                           <td>
-                            <a href="{% url 'booking_edit' b.id %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'booking_edit' b.id %}" class="btn btn-sm btn-primary">แก้ไข</a>
                             <a href="{% url 'booking_cancel' b.id %}"
                                class="btn btn-sm btn-danger"
-                               onclick="return confirm('Are you sure you want to cancel this booking?');">Cancel</a>
+                               onclick="return confirm('Are you sure you want to cancel this booking?');">ยกเลิก</a>
                           </td>
                         </tr>
                       {% endfor %}

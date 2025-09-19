@@ -20,7 +20,7 @@ def overview(request):
     for b in bookings:
         events.append(
             {
-                "title": f"{b.classroom.name} - {b.user.username}",
+                "title": f"{b.classroom.name} ({b.classroom.room_number}) - {b.user.username}",
                 "start": localtime(b.start_time).isoformat(),
                 "end": localtime(b.end_time).isoformat(),
                 "color": "#f56954",  # Red for booked

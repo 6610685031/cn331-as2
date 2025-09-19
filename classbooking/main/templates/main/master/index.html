@@ -4,14 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="description" content="classroom reservation webpage" />
     <meta name="keywords" content="reservation, booking" />
+    <link href="https://fonts.googleapis.com/css?family=IBM Plex Sans Thai"
+          rel="stylesheet" />
+    {% load static %}
+    <link rel="icon" href="{% static 'home/favicon.ico' %}" />
     <title>
       {% block title %}
-        Classroom Reservation
       {% endblock title %}
-    </title>
+    - ระบบจองห้องเรียนออนไลน์</title>
     {% load django_bootstrap5 %}
     {% bootstrap_css %} {% bootstrap_javascript %}
     <style>
+      body,
+      html {
+        font-family: sans-serif;
+        font-family: "IBM Plex Sans Thai";
+      }
       body {
         background: url("{% load static %} {% static 'main/classroom.jpg' %}") no-repeat center center fixed;
         background-size: cover;
