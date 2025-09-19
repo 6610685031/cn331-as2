@@ -1,12 +1,12 @@
 {% extends "home/master/index.html" %}
 <!---->
-{% block title %} หน้าหลัก {% endblock title %}
+{% block title %}
+  หน้าหลัก
+{% endblock title %}
 <!---->
 {% block content %}
-<div class="content">
-  <h1>ระบบจองห้องเรียนออนไลน์</h1>
-  <a href="{% url 'overview' %}" class="btn btn-primary">
-      เริ่มการจอง
-  </a>
-</div>
+  <div class="content">
+    <h1>ระบบจองห้องเรียนออนไลน์</h1>
+    <a href="{% url 'overview' %}" class="btn btn-primary">เริ่มการจอง</a>
+  </div>
 {% endblock content %}

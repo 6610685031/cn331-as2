@@ -1,17 +1,17 @@
 {% extends "main/master/index.html" %}
 {% block content %}
-<div class="container mt-4">
-  <div class="content-card">
-    <h2>Delete Classroom</h2>
-    <p>
-      Are you sure you want to delete <strong>{{ classroom.name }}</strong> 
-      (Room No. {{ classroom.room_number }})?
-    </p>
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Delete</button>
-      <a href="{% url 'classroom' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+  <div class="container mt-4">
+    <div class="content-card">
+      <h2>Delete Classroom</h2>
+      <p>
+        Are you sure you want to delete <strong>{{ classroom.name }}</strong>
+        (Room No. {{ classroom.room_number }})?
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'classroom' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
   </div>
-</div>
 {% endblock content %}

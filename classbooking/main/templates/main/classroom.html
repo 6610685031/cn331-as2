@@ -1,48 +1,53 @@
 {% extends "main/master/index.html" %}
 <!---->
-{% block title %} Classrooms {% endblock title %}
+{% block title %}
+  Classrooms
+{% endblock title %}
 <!---->
 {% block content %}
-<div class="container mt-4">
-  <div class="content-card">
-    <h2>Classrooms</h2>
-
-    {% if request.user.is_staff %}
-    <div class="d-grid mt-4"> 
-      <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
-    </div>
-    {% endif %}
-
-    {% if classrooms %}
-    <div class="row">
-      {% for room in classrooms %}
-        <div class="col-md-4">
-          <div class="content-card">
-            <h5>{{ room.name }}</h5>
-            <p>
-              Room Number: {{ room.room_number }} <br>
-              Hours Left: {{ room.hours_left }} / {{ room.total_hours }} <br>
-              Status: {% if room.is_available %}
-                <span class="text-success">Available</span>
-              {% else %}
-                <span class="text-danger">Booked</span>
-              {% endif %}
-              {% if room.booked_by %}
-                <br>Booked by: {{ room.booked_by.username }}
-              {% endif %}
-            </p>
-
-            {% if request.user.is_staff %}
-              <a href="{% url 'classroom_edit' room.id %}" class="btn btn-sm btn-warning">Edit</a>
-              <a href="{% url 'classroom_remove' room.id %}" class="btn btn-sm btn-danger display-inline">Delete</a>
-            {% endif %}
-          </div>
+  <div class="container mt-4">
+    <div class="content-card">
+      <h2>Classrooms</h2>
+      {% if request.user.is_staff %}
+        <div class="d-grid mt-4">
+          <a href="{% url 'classroom_add' %}" class="btn btn-primary mb-3">Add Classroom</a>
         </div>
-      {% endfor %}
+      {% endif %}
+      {% if classrooms %}
+        <div class="row">
+          {% for room in classrooms %}
+            <div class="col-md-4">
+              <div class="content-card">
+                <h5>{{ room.name }}</h5>
+                <p>
+                  Room Number: {{ room.room_number }}
+                  <br>
+                  Hours Left: {{ room.hours_left }} / {{ room.total_hours }}
+                  <br>
+                  Status:
+                  {% if room.is_available %}
+                    <span class="text-success">Available</span>
+                  {% else %}
+                    <span class="text-danger">Booked</span>
+                  {% endif %}
+                  {% if room.booked_by %}
+                    <br>
+                    Booked by: {{ room.booked_by.username }}
+                  {% endif %}
+                </p>
+                {% if request.user.is_staff %}
+                  <a href="{% url 'classroom_edit' room.id %}"
+                     class="btn btn-sm btn-warning">Edit</a>
+                  <a href="{% url 'classroom_remove' room.id %}"
+                     class="btn btn-sm btn-danger display-inline">Delete</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% elif not request.user.is_staff %}
+        <h5 class="text-muted mt-4">No classroom available.</h5>
+      {% endif %}
     </div>
-    {% elif not request.user.is_staff %}
-      <h5 class="text-muted mt-4">No classroom available.</h5>
-    {% endif %}
   </div>
-</div>
 {% endblock content %}

@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8"/>
-    <meta name="description" content="classroom reservation webpage"/>
-    <meta name="keywords" content="reservation, booking"/>
-
-    <title>{% block title %} Classroom Reservation {% endblock title %}</title>
-    {% load django_bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
+    <meta charset="UTF-8" />
+    <meta name="description" content="classroom reservation webpage" />
+    <meta name="keywords" content="reservation, booking" />
+    <title>
+      {% block title %}
+        Classroom Reservation
+      {% endblock title %}
+    </title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %} {% bootstrap_javascript %}
     <style>
       body {
         background: url("{% load static %} {% static 'main/classroom.jpg' %}")
@@ -29,23 +33,23 @@
         display: inline !important;
       }
       .content-card {
-        background: rgba(255, 255, 255, 0.9); /* semi-transparent white */
-        border-radius: 1rem;                  /* rounded corners */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* soft shadow */
-        padding: 1.5rem;                      /* consistent padding */
+        background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+        border-radius: 1rem;                  /* Rounded corners */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Soft shadow */
+        padding: 1.5rem;                      /* Consistent padding */
         margin-bottom: 1.5rem;
       }
       .content-card h2,
       .content-card h5 {
-        color: #212529; /* force Bootstrap dark text */
+        color: #212529; /* Force Bootstrap dark text */
       }
     .scroll-box {
-      height: 65vh;              /* make tall */
-      overflow-y: auto;          /* scroll vertically if needed */
-      overflow-x: hidden;        /* prevent horizontal scroll unless necessary */
-      border: 1px solid #dee2e6; /* subtle Bootstrap-style border */
+      height: 65vh;              /* Make tall */
+      overflow-y: auto;          /* Scroll vertically if needed */
+      overflow-x: hidden;        /* Prevent horizontal scroll unless necessary */
+      border: 1px solid #dee2e6; /* Subtle Bootstrap-style border */
       border-radius: 0.5rem;
-      background: #fff;          /* ensure text visibility */
+      background: #fff;          /* Ensure text visibility */
       padding: 0.5rem;
     }
 
@@ -60,51 +64,96 @@
     .scroll-box::-webkit-scrollbar-track {
       background: transparent;
     }
-</style>
+    .navbar-light .navbar-brand,
+    .navbar-light .navbar-nav .nav-link,
+    .navbar-light .navbar-text {
+      color: #212529 !important; /* Bootstrap dark text */
+    }
+
+    .navbar-light .navbar-nav .nav-link:hover {
+      color: #0d6efd !important; /* Bootstrap primary color on hover */
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.25); /* Darken video */
+      z-index: -1;
+    }
+    .vr {
+      height: 1em;
+      margin: 0 1em;
+    }
+    </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light rounded-3 shadow-sm mt-4 mx-4">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'overview' %}">Reservation</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto">
+        <a class="navbar-brand fw-bold" href="{% url 'overview' %}">
+          <img src="{% load static %} {% static 'main/schale_icon_black.png' %}"
+               width="30"
+               height="30"
+               alt="กลับหน้าหลัก">
+        </a>
+        <!-- Mobile menu button -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Nav links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link" href="{% url 'overview' %}">Overview</a>
             </li>
+            <div class="vr align-self-center"></div>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'classroom' %}">Classroom</a>
+              <a class="nav-link" href="{% url 'classroom' %}">Classrooms</a>
             </li>
+            <div class="vr align-self-center"></div>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'booking' %}">Booking</a>
+              <a class="nav-link" href="{% url 'booking' %}">Bookings</a>
             </li>
           </ul>
+          <!-- Right side: auth -->
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <span class="nav-link me-2">{{ user.username|upper }}</span>
+            </li>
+            <form class="form-inline" action="{% url 'auth_logout' %}">
+              <button class="btn btn-outline-primary my-sm-0" type="submit">Logout</button>
+            </form>
+          </ul>
         </div>
-        <a class="navbar-brand navbar-logout" href="{% url 'auth_logout' %}">Logout</a>
       </div>
     </nav>
-
-    <!-- display messages-->
+    <!-- Display messages-->
     {% if messages %}
-    <div
-      class="messages-container messages-infront position-fixed top-0 start-50 translate-middle-x mt-3"
-    >
-      {% for message in messages %}
-      <div
-        class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm"
-        role="alert"
-      >
-        {{ message }}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
+      <div class="messages-container messages-infront position-fixed top-0 start-50 translate-middle-x mt-4">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm"
+               role="alert">
+            {{ message }}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     {% endif %}
-
-    <div class="container-fluid mt-4 px-4">{% block content %}{% endblock content %}</div>
+    <div class="container-fluid mt-4 px-4">
+      {% block content %}
+      {% endblock content %}
+    </div>
+    <!-- Overlay -->
+    <div class="overlay"></div>
   </body>
 </html>

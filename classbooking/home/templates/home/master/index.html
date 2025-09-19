@@ -2,17 +2,18 @@
 <html lang="th">
   <head>
     <meta charset="utf-8" />
-    <meta name="description" content="classroom reservation webpage"/>
-    <meta name="keywords" content="reservation, booking"/>
-
-    <link
-      href="https://fonts.googleapis.com/css?family=IBM Plex Sans Thai"
-      rel="stylesheet"
-    />
+    <meta name="description" content="classroom reservation webpage" />
+    <meta name="keywords" content="reservation, booking" />
+    <link href="https://fonts.googleapis.com/css?family=IBM Plex Sans Thai"
+          rel="stylesheet" />
     {% load static %}
     <link rel="icon" href="{% static 'home/favicon.ico' %}" />
-    <title>{% block title %}{% endblock title %} - ระบบจองห้องเรียนออนไลน์</title>
-    {% load django_bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
+    <title>
+      {% block title %}
+      {% endblock title %}
+    - ระบบจองห้องเรียนออนไลน์</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %} {% bootstrap_javascript %}
     <style>
       body,
       html {
@@ -26,7 +27,7 @@
       } 
 
       body {
-        background: url("{% load static %} {% static 'home/home_fallback.jpg' %}") center/cover no-repeat;
+        background: url("{% load static %} {% static 'home/home_fallback.jpg' %}") absolute no-repeat;
       }
 
       .bg-light
@@ -85,33 +86,25 @@
       {% load static %}
       <source src="{% static 'home/home.mp4' %}" type="video/mp4" />
     </video>
-
     <!-- overlay -->
     <div class="overlay"></div>
-
     <!-- display messages-->
     {% if messages %}
-    <div
-      class="messages-container messages-infront position-fixed top-0 start-50 translate-middle-x mt-3"
-    >
-      {% for message in messages %}
-      <div
-        class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm"
-        role="alert"
-      >
-        {{ message }}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
+      <div class="messages-container messages-infront position-fixed top-0 start-50 translate-middle-x mt-4">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm"
+               role="alert">
+            {{ message }}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     {% endif %}
-
     <!-- block content-->
-    {% block content %} {% endblock content %}
+    {% block content %}
+    {% endblock content %}
   </body>
 </html>

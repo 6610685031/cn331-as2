@@ -1,61 +1,44 @@
 {% extends "home/master/index.html" %}
 <!---->
-{% block title %} เข้าสู่ระบบ {% endblock title %}
+{% block title %}
+  เข้าสู่ระบบ
+{% endblock title %}
 <!---->
 {% block content %}
-<style>
+  <style>
   .login-width {
     max-width: 400px; width: 100%;
   }
-</style>
-<div class="bg-light d-flex align-items-center justify-content-center vh-100">
-  <div
-    class="card shadow-lg p-4 rounded-4 login-width"
-  >
-    <div class="text-center mb-4">
-      <h3 class="fw-bold">เข้าสู่ระบบ</h3>
-      <p class="text-muted">กรุณาลงชื่อเข้าใช้เพื่อดำเนินการต่อ</p>
+  </style>
+  <div class="bg-light d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow-lg p-4 rounded-4 login-width">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold">เข้าสู่ระบบ</h3>
+        <p class="text-muted">กรุณาลงชื่อเข้าใช้เพื่อดำเนินการต่อ</p>
+      </div>
+      {% load crispy_forms_tags %}
+      <form action="{% url 'auth_login' %}" method="post">
+        {% csrf_token %} {{ form | crispy }}
+        <!-- Remember me -->
+        <div class="mb-3 form-check">
+          <input type="checkbox"
+                 class="form-check-input"
+                 id="remember_me"
+                 name="remember_me" />
+          <label class="form-check-label" for="remember_me">จดจำ Session นี้ไว้</label>
+        </div>
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
+        <div class="text-center mt-3">
+          <small>หากไม่มีชื่ออยู่ในระบบกรุณา
+            <a href="{% url 'auth_register' %}">ลงทะเบียน</a></small>
+        </div>
+        <div class="text-center mt-3 text-muted">
+          <a href="{% url 'home' %}" type="button" class="btn btn-outline-dark">กลับไปยังหน้าหลัก</a>
+        </div>
+        <!-- workaround for 'next' parameter-->
+        {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+      </form>
     </div>
-
-    {% load crispy_forms_tags %}
-    <form action="{% url 'auth_login' %}" method="post">
-      {% csrf_token %} {{ form | crispy }}
-
-      <!-- Remember me -->
-      <div class="mb-3 form-check">
-        <input
-          type="checkbox"
-          class="form-check-input"
-          id="remember_me"
-          name="remember_me"
-        />
-        <label class="form-check-label" for="remember_me"
-          >จดจำ Session นี้ไว้</label
-        >
-      </div>
-
-      <!-- Submit button -->
-      <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
-
-      <div class="text-center mt-3">
-        <small
-          >หากไม่มีชื่ออยู่ในระบบกรุณา
-          <a href="{% url 'auth_register' %}">ลงทะเบียน</a></small
-        >
-      </div>
-
-      <div class="text-center mt-3 text-muted">
-        <a href="{% url 'home' %}" type="button" class="btn btn-outline-dark">
-          กลับไปยังหน้าหลัก
-        </a>
-      </div>
-
-      <!-- workaround for 'next' parameter-->
-      {% if request.GET.next %}
-        <input type="hidden" name="next" value="{{ request.GET.next }}">
-      {% endif %}
-    </form>
   </div>
-</div>
-
 {% endblock content %}
