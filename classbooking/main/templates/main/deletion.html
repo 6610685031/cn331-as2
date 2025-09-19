@@ -1,0 +1,14 @@
+{% extends "main/master/index.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="content-card">
+            <h2>Delete Account</h2>
+            <p class="text-danger">This action cannot be undone. All your bookings will also be deleted.</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete My Account</button>
+                <a href="{% url 'overview' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

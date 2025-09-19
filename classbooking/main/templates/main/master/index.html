@@ -134,6 +134,11 @@
             <li class="nav-item">
               <span class="nav-link me-2">{{ user.username|title }}</span>
             </li>
+            {% if not request.user.is_staff %}
+              <form class="form-inline me-2" action="{% url 'auth_deletion' %}">
+                <button class="btn btn-outline-danger my-sm-0" type="submit">Delete Account</button>
+              </form>
+            {% endif %}
             <form class="form-inline" action="{% url 'auth_logout' %}">
               <button class="btn btn-outline-primary my-sm-0" type="submit">Logout</button>
             </form>

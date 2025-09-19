@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template import loader
@@ -96,6 +97,24 @@ def auth_logout(request):
         return redirect("auth_logout")
     else:
         return render(request, "home/home.html")
+
+
+@login_required
+def auth_deletion(request):
+    if request.method == "POST":
+        user = request.user
+
+        if user.is_superuser or user.is_staff:
+            messages.warning(
+                request, "Admin and superuser accounts cannot be deleted here."
+            )
+            return redirect("overview")  # redirect back to a safe page
+
+        user.delete()
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect("auth_login")  # redirect to login or homepage
+
+    return render(request, "main/deletion.html")
 
 
 # Create your views here.
