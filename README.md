@@ -3,7 +3,11 @@
 6610545029 Thawalporn Jindavaranon
 
 
-link video: <https://youtu.be/g87WBwF8XG0>
+[OLD: Demonstration Video (Assignment 2)](https://www.youtube.com/watch?v=g87WBwF8XG0)\
+[NEW: Cloud Server Demonstration (Assignment 3)]: TO BE ADDED
+
+![Main page for the website](https://github.com/6610685031/cn331-as2/blob/deploy/main_page.png?raw=true)
+
 ## Cloning this repository
 ```
 git clone https://github.com/6610685031/cn331-as2
