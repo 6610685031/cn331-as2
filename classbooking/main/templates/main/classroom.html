@@ -53,8 +53,8 @@
                          aria-valuemax="{{ room.total_hours }}"></div>
                   </div>
                 </div>
-                <br>
                 {% if request.user.is_staff %}
+                  <br>
                   <a href="{% url 'classroom_edit' room.id %}"
                      class="btn btn-sm btn-warning">Edit</a>
                   <a href="{% url 'classroom_remove' room.id %}"

@@ -1,0 +1,17 @@
+{% extends "main/master/index.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="content-card">
+            <h2>Delete Booking</h2>
+            <p>
+                Are you sure you want to cancel your booking from <strong>{{ booking.classroom.name }}</strong>
+                (Room No. {{ booking.classroom.room_number }})?
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'booking' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

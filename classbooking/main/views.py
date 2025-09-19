@@ -133,26 +133,31 @@ def booking_cancel(request, pk):
     else:
         booking = get_object_or_404(Booking, pk=pk, user=request.user)
 
-    # Permission checker
-    if booking.user != request.user and not request.user.is_staff:
-        raise PermissionDenied("You cannot cancel this booking.")
+    if request.method == "POST":
+        # Permission checker
+        if booking.user != request.user and not request.user.is_staff:
+            raise PermissionDenied("You cannot cancel this booking.")
 
-    # Calculate booked hours
-    classroom = booking.classroom
-    duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
+        # Calculate booked hours
+        classroom = booking.classroom
+        duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
 
-    # Restore classroom hours
-    classroom.hours_left += duration
-    if classroom.hours_left > classroom.total_hours:
-        classroom.hours_left = classroom.total_hours
-    classroom.is_available = classroom.hours_left > 0
-    classroom.save()
+        # Restore classroom hours
+        classroom.hours_left += duration
+        if classroom.hours_left > classroom.total_hours:
+            classroom.hours_left = classroom.total_hours
+        classroom.is_available = classroom.hours_left > 0
+        classroom.save()
 
-    # Delete booking
-    booking.delete()
+        # Delete booking
+        booking.delete()
 
-    messages.success(request, f"Your booking for {classroom.name} has been canceled.")
-    return redirect("booking")  # Redirect back to your booking page
+        messages.success(
+            request, f"Your booking for {classroom.name} has been canceled."
+        )
+        return redirect("booking")  # Redirect back to your booking page
+
+    return render(request, "main/booking/cancel.html", {"booking": booking})
 
 
 @login_required
