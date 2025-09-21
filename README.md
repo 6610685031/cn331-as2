@@ -4,9 +4,13 @@
 
 
 [OLD: Demonstration Video (Assignment 2)](https://www.youtube.com/watch?v=g87WBwF8XG0)\
-[NEW: Cloud Server Demonstration (Assignment 3)]: TO BE ADDED
+[NEW: Cloud Server Demonstration (Assignment 3)](https://www.youtube.com/watch?v=M22FV3HeW4U)
 
 ![Main page for the website](https://github.com/6610685031/cn331-as2/blob/deploy/main_page.png?raw=true)
+
+### Accessible via
+https://cn331-as2-6610685031.onrender.com/ \
+https://cn331.krentiz.dev/
 
 ## Cloning this repository
 ```
