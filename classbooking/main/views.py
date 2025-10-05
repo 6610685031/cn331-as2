@@ -87,21 +87,22 @@ def booking_edit(request, pk):
         )
 
         if form.is_valid():
-            # Get the correct classroom and unedited booking object
-            old_booking = get_object_or_404(Booking, pk=pk)
-            classroom = booking.classroom
-            duration = (
-                old_booking.end_time - old_booking.start_time
-            ).total_seconds() / 3600.0
+            # DEPRECATED: "signals.py" will now handle hours restoration
+            # # Get the correct classroom and unedited booking object
+            # old_booking = get_object_or_404(Booking, pk=pk)
+            # classroom = booking.classroom
+            # duration = (
+            #     old_booking.end_time - old_booking.start_time
+            # ).total_seconds() / 3600.0
 
-            # Restore classroom hours
-            classroom.hours_left += duration
-            if classroom.hours_left > classroom.total_hours:
-                classroom.hours_left = classroom.total_hours
-            classroom.is_available = classroom.hours_left > 0
+            # # Restore classroom hours
+            # classroom.hours_left += duration
+            # if classroom.hours_left > classroom.total_hours:
+            #     classroom.hours_left = classroom.total_hours
+            # classroom.is_available = classroom.hours_left > 0
 
-            # Save the classroom object
-            classroom.save()
+            # # Save the classroom object
+            # classroom.save()
 
             # Save the form
             form.save()
@@ -138,16 +139,17 @@ def booking_cancel(request, pk):
         if booking.user != request.user and not request.user.is_staff:
             raise PermissionDenied("คุณไม่สามารถยกเลิกการจองนี้ได้")
 
-        # Calculate booked hours
-        classroom = booking.classroom
-        duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
+        # DEPRECATED: "signals.py" will now handle hours restoration
+        # # Calculate booked hours
+        # classroom = booking.classroom
+        # duration = (booking.end_time - booking.start_time).total_seconds() / 3600.0
 
-        # Restore classroom hours
-        classroom.hours_left += duration
-        if classroom.hours_left > classroom.total_hours:
-            classroom.hours_left = classroom.total_hours
-        classroom.is_available = classroom.hours_left > 0
-        classroom.save()
+        # # Restore classroom hours
+        # classroom.hours_left += duration
+        # if classroom.hours_left > classroom.total_hours:
+        #     classroom.hours_left = classroom.total_hours
+        # classroom.is_available = classroom.hours_left > 0
+        # classroom.save()
 
         # Delete booking
         booking.delete()
