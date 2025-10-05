@@ -1,19 +1,16 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from .models import Booking, Classroom
+from .models import Booking
 
 
-@receiver(post_save, sender=Booking)
-def update_classroom_on_booking(sender, instance, created, **kwargs):
-    # Mark classroom as unavailable when a booking is created or updated.
-    classroom = instance.classroom
-    classroom.is_available = False
-    classroom.save()
-
-
-@receiver(post_delete, sender=Booking)
-def update_classroom_on_booking_delete(sender, instance, **kwargs):
-    # Mark classroom as available again when a booking is deleted.
-    classroom = instance.classroom
-    classroom.is_available = True
-    classroom.save()
+@receiver(pre_delete, sender=Booking)
+def restore_classroom_hours_on_booking_delete(sender, instance, **kwargs):
+    """Restore classroom hours when a booking is deleted."""
+    if instance.classroom:
+        duration = (instance.end_time - instance.start_time).total_seconds() / 3600.0
+        instance.classroom.hours_left += duration
+        # Make sure it doesn’t exceed total_hours
+        if instance.classroom.hours_left > instance.classroom.total_hours:
+            instance.classroom.hours_left = instance.classroom.total_hours
+        instance.classroom.is_available = instance.classroom.hours_left > 0
+        instance.classroom.save()
