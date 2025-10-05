@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
@@ -86,6 +87,19 @@ class Booking(models.Model):
 
         if overlapping.exists():
             raise ValidationError("ห้องเรียนนี้ถูกจองตามเวลาที่เลือกไปแล้ว")
+
+        if not (self.user.is_superuser):
+            if (self.end_time - self.start_time).total_seconds() > 3600.0:
+                raise ValidationError("ผู้ใช้ทั่วไปไม่สามารถจองเกิน 1 ชั่วโมงได้")
+
+            if (
+                Booking.objects.filter(user=self.user, classroom=self.classroom)
+                .exclude(pk=self.user.pk)
+                .exists()
+            ):
+                raise ValidationError(
+                    "คุณได้จองห้องเรียนนี้แล้ว ผู้ใช้ทั่วไปสามารถจองห้องเรียนแต่ละห้องได้เพียงครั้งเดียวเท่านั้น"
+                )
 
     def save(self, *args, **kwargs):
         duration = (
