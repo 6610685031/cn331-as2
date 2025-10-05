@@ -12,6 +12,18 @@
 https://cn331-as2-6610685031.onrender.com/ \
 https://cn331.krentiz.dev/
 
+### Testing (via Django testing)
+Make sure you're in classbooking directory and pass DEBUG="True" to your shell
+```
+cd classbooking
+export DEBUG="True"
+```
+Use coverage.py to collect the coverage data (if coverage.py is not install do run: pip install coverage)
+```
+coverage run manage.py test
+coverage report
+```
+
 ## Cloning this repository
 ```
 git clone https://github.com/6610685031/cn331-as2
@@ -44,7 +56,9 @@ python manage.py migrate
 ```
 
 ## Running the web server
+Pass DEBUG="True" to your shell to prevent errors if you're running this locally
 ```
+export DEBUG="True"
 python manage.py runserver
 ```
 
